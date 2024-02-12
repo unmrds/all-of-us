@@ -190,6 +190,20 @@ data. In this case, we will open up a spreadsheet like view using the
 View(ugss)  # note that is a capital V
 ~~~
 
+>
+> #### Tip: Checking your environment
+>
+>We have demonstrated use of the ```search()``` function to check which
+>packages have been loaded into our environment.
+>
+>In addition to packages, we may also want to view information about the
+>ojects - variables and dataframes - that are active in our current
+>environment. We can use the ```var.info()``` function to do this.
+>
+>```var.info()```
+
+
+
 
 ## Resources
 
