@@ -451,11 +451,180 @@ ugss %>%
   filter(age >= 18 & age <= 22) %>%
   select(age, study) %>%
   group_by(age) %>%
-  summarise(c = n())
+  summarise(average_time_studying = mean(study))
 ~~~
 
+It's worth highlighting that throughout this process of data manipulation we
+have not altered the underlying raw data. We want to leave our data intact,
+but we may also be interested in saving our aggregations. Once we are happy
+with the result, we can do that by assigning the output to a new object.
 
+~~~r
+age_study <- ugss %>%
+  filter(age >= 18 & age <= 22) %>%
+  select(age, study) %>%
+  group_by(age) %>%
+  summarise(average_time_studying = mean(study))
+~~~
 
+To see the output, we call the new object
+
+~~~r
+age_study
+~~~
+
+We can quickly inspect the ```age_study``` object with ```var.info()```.
+
+~~~r
+var.info()
+~~~
+
+Data can be grouped according to multiple variables. It may make sense to group
+our tattoo subset by sex and age. We will also generate a count statistics
+for each group. 
+
+~~~r
+ugss %>%
+  select(sex, age, tattoos, tattooed) %>%
+  filter(tattooed == "Yes") %>%
+  group_by(sex, age) %>%
+  summarize(count = n())
+~~~
+
+If this looks good, we will save to a new object.
+
+~~~r
+age_sex_tattoos <- ugss %>%
+  select(sex, age, tattoos, tattooed) %>%
+  filter(tattooed == "Yes") %>%
+  group_by(sex, age) %>%
+  summarize(count = n())
+~~~
+
+### More about dplyr
+
+```dpyr()``` includes many other functions and methods for working with data.
+Some functions we recommend learning about include ```mutate()```, 
+```rename()```, and different kinds of joins.
+
+More information can be found at the ```dplyr``` documentation [^3]. The 
+documentation page includes a helpful cheat sheet.
+
+## Visualizing data with ggplot
+
+The final topic of this introduction to using R in Jupyter is visualizing
+data.
+
+```ggplot()``` is designed for iterative development of publication-ready 
+plots. As such, for the most part we will develop each plot within a single
+code cell. For future reference, the step-by-step process is included in the
+copy of this tutorial online [^4].
+
+The overall process for developing plots with ```ggplot()``` is
+
+1. Define plot axes and global aesthetics in a plot object.
+1. Set layers of plot styles and aesthetics using geometries.
+1. Customize labels and themes.
+
+Let's create a plot object.
+
+~~~r
+ggplot(age_study, aes(x = age, y = average_time_studying))
+~~~
+
+When we execute this code cell, the output is an empty plot. The axes are
+labeled, but the data haven't actually been plotted. This is because
+```ggplot()``` needs to know how we intend to represent the data. We use
+geometries to do this.
+
+Let's use a "count" plot.
+
+~~~r
+ggplot(age_study, aes(x = age, y = average_time_studying)) +
+  geom_col()
+~~~
+
+The output is a plot of average time spent studying by age, for study
+participants between 18-22 years of age. 
+
+By way of demonstration, we can also combine ```dplyr``` and ```ggplot``` 
+functions for a bigger picture  view. This time we will include
+all of the observations.
+
+~~~r
+ugss %>%
+  select(age, study) %>%
+  ggplot(aes(x = age, y = study)) +
+  geom_point()
+~~~
+
+This gives us a different sense of the distribution across the full dataset.
+We can make the plot a little more informative by setting some of the style
+arguments in the ```geom_point()``` layer.
+
+~~~r
+ugss %>%
+  select(age, study) %>%
+  ggplot(aes(x = age, y = study)) +
+  geom_point(alpha = 0.5, size = 3.0, color = "blue")
+~~~
+
+We will also visualize our tattoo data. Since we grouped by both age and sex,
+it makes sense to add a facet layer to separate the plots by groups.
+
+~~~r
+ggplot(age_sex_tattoos, aes(x = age, y = count))
+~~~
+
+Add a geometry. 
+
+~~~r
+ggplot(age_sex_tattoos, aes(x = age, y = count)) +
+  geom_col()
+~~~
+
+Note that the resulting plot does not include information about respondents'
+sex, even though that data is included in our subset. One way to represent
+those data in the plots is to facet by sex.
+
+~~~r
+ggplot(age_sex_tattoos, aes(x = age, y = count)) +
+  geom_col() +
+  facet_wrap(~ sex)
+~~~
+
+### Customizing plot layout
+
+Once we have arrived at an informative plot, we can change the default layout
+and labels.
+
+~~~r
+ggplot(age_sex_tattoos, aes(x = age, y = count)) +
+  geom_col(fill = "blue") +
+  facet_wrap(~ sex) +
+  labs(title = "Count of respondents with tattoos",
+  subtitle = "By sex and age",
+  x = "Age",
+  y = "Count")
+~~~
+
+We can also change the default theme.
+
+~~~r
+ggplot(age_sex_tattoos, aes(x = age, y = count)) +
+  geom_col(fill = "blue") +
+  facet_wrap(~ sex) +
+  labs(title = "Count of respondents with tattoos",
+  subtitle = "By sex and age",
+  x = "Age",
+  y = "Count") +
+  theme_light()
+~~~
+
+#### More about ggplot
+
+For more information, see the ```ggplot()``` documentation [^5]. The 
+documentation page likewise includes a link to a PDF cheat sheet.
 
 ## Resources
 
@@ -465,6 +634,16 @@ With an Implementation in R. New York, USA: Springer.
 [^2]: RDocumentation.
 *VGAMdata: ugss: Undergraduate Statistics Students Lifestyle Questionnaire*.
 Version 1.1-9. Accessed 2024-02-12.
+
+[^3]: Wickham H, François R, Henry L, Müller K, Vaughan D (2023). _dplyr: A Grammar of
+  Data Manipulation_. R package version 1.1.4,
+  <https://CRAN.R-project.org/package=dplyr>.
+  
+[^4]: This tutorial: <https://github.com/unmrds/all-of-us/blob/main/aou_tutorial.md>
+
+[^5]: Wickham H, François R, Henry L, Müller K, Vaughan D (2023). _dplyr: A Grammar of
+  Data Manipulation_. R package version 1.1.4,
+  <https://CRAN.R-project.org/package=dplyr>.
 
 
 

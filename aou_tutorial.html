@@ -412,11 +412,12 @@ error, and all of them happen to be all integer-valued.<a href="#fn2" class="foo
 <p><strong>ONE FINAL CAVEAT</strong></p>
 <p>In this workshop, we will be using a publicly available dataset to
 generate demographic descriptions of variables at a very high level of
-generalization. We note that the AoU research workbench provides access
-to data at the level of individual observations. Many analyses at a much
+granularity. We note that the AoU research workbench provides access to
+data at the level of individual observations. Many analyses at a much
 more granular level are available to researchers using the AoU
-workbench. Nothing in this workshop is intended to imply that
-researchers using the AoU workbench will be limited to generating
+workbench, using a wide array of modeling and clinical research
+methodologies. Nothing in this workshop is intended to imply that
+researchers using the AoU workbench will be limited to only generating
 descriptive statistics.</p>
 </div>
 <div id="creating-a-jupyter-notebook-in-colab" class="section level2">
@@ -720,7 +721,126 @@ calculate some statistic based on group membership. We use the
   filter(age &gt;= 18 &amp; age &lt;= 22) %&gt;%
   select(age, study) %&gt;%
   group_by(age) %&gt;%
-  summarise(c = n())</code></pre>
+  summarise(average_time_studying = mean(study))</code></pre>
+<p>It’s worth highlighting that throughout this process of data
+manipulation we have not altered the underlying raw data. We want to
+leave our data intact, but we may also be interested in saving our
+aggregations. Once we are happy with the result, we can do that by
+assigning the output to a new object.</p>
+<pre class="r"><code>age_study &lt;- ugss %&gt;%
+  filter(age &gt;= 18 &amp; age &lt;= 22) %&gt;%
+  select(age, study) %&gt;%
+  group_by(age) %&gt;%
+  summarise(average_time_studying = mean(study))</code></pre>
+<p>To see the output, we call the new object</p>
+<pre class="r"><code>age_study</code></pre>
+<p>We can quickly inspect the <code>age_study</code> object with
+<code>var.info()</code>.</p>
+<pre class="r"><code>var.info()</code></pre>
+<p>Data can be grouped according to multiple variables. It may make
+sense to group our tattoo subset by sex and age. We will also generate a
+count statistics for each group.</p>
+<pre class="r"><code>ugss %&gt;%
+  select(sex, age, tattoos, tattooed) %&gt;%
+  filter(tattooed == &quot;Yes&quot;) %&gt;%
+  group_by(sex, age) %&gt;%
+  summarize(count = n())</code></pre>
+<p>If this looks good, we will save to a new object.</p>
+<pre class="r"><code>age_sex_tattoos &lt;- ugss %&gt;%
+  select(sex, age, tattoos, tattooed) %&gt;%
+  filter(tattooed == &quot;Yes&quot;) %&gt;%
+  group_by(sex, age) %&gt;%
+  summarize(count = n())</code></pre>
+</div>
+<div id="more-about-dplyr" class="section level3">
+<h3>More about dplyr</h3>
+<p><code>dpyr()</code> includes many other functions and methods for
+working with data. Some functions we recommend learning about include
+<code>mutate()</code>, <code>rename()</code>, and different kinds of
+joins.</p>
+<p>More information can be found at the <code>dplyr</code> documentation
+<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. The
+documentation page includes a helpful cheat sheet.</p>
+</div>
+</div>
+<div id="visualizing-data-with-ggplot" class="section level2">
+<h2>Visualizing data with ggplot</h2>
+<p>The final topic of this introduction to using R in Jupyter is
+visualizing data.</p>
+<p><code>ggplot()</code> is designed for iterative development of
+publication-ready plots. As such, for the most part we will develop each
+plot within a single code cell. For future reference, the step-by-step
+process is included in the copy of this tutorial online <a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>.</p>
+<p>The overall process for developing plots with <code>ggplot()</code>
+is</p>
+<ol style="list-style-type: decimal">
+<li>Define plot axes and global aesthetics in a plot object.</li>
+<li>Set layers of plot styles and aesthetics using geometries.</li>
+<li>Customize labels and themes.</li>
+</ol>
+<p>Let’s create a plot object.</p>
+<pre class="r"><code>ggplot(age_study, aes(x = age, y = average_time_studying))</code></pre>
+<p>When we execute this code cell, the output is an empty plot. The axes
+are labeled, but the data haven’t actually been plotted. This is because
+<code>ggplot()</code> needs to know how we intend to represent the data.
+We use geometries to do this.</p>
+<p>Let’s use a “count” plot.</p>
+<pre class="r"><code>ggplot(age_study, aes(x = age, y = average_time_studying)) +
+  geom_col()</code></pre>
+<p>The output is a plot of average time spent studying by age, for study
+participants between 18-22 years of age.</p>
+<p>By way of demonstration, we can also combine <code>dplyr</code> and
+<code>ggplot</code> functions for a bigger picture view. This time we
+will include all of the observations.</p>
+<pre class="r"><code>ugss %&gt;%
+  select(age, study) %&gt;%
+  ggplot(aes(x = age, y = study)) +
+  geom_point()</code></pre>
+<p>This gives us a different sense of the distribution across the full
+dataset. We can make the plot a little more informative by setting some
+of the style arguments in the <code>geom_point()</code> layer.</p>
+<pre class="r"><code>ugss %&gt;%
+  select(age, study) %&gt;%
+  ggplot(aes(x = age, y = study)) +
+  geom_point(alpha = 0.5, size = 3.0, color = &quot;blue&quot;)</code></pre>
+<p>We will also visualize our tattoo data. Since we grouped by both age
+and sex, it makes sense to add a facet layer to separate the plots by
+groups.</p>
+<pre class="r"><code>ggplot(age_sex_tattoos, aes(x = age, y = count))</code></pre>
+<p>Add a geometry.</p>
+<pre class="r"><code>ggplot(age_sex_tattoos, aes(x = age, y = count)) +
+  geom_col()</code></pre>
+<p>Note that the resulting plot does not include information about
+respondents’ sex, even though that data is included in our subset. One
+way to represent those data in the plots is to facet by sex.</p>
+<pre class="r"><code>ggplot(age_sex_tattoos, aes(x = age, y = count)) +
+  geom_col() +
+  facet_wrap(~ sex)</code></pre>
+<div id="customizing-plot-layout" class="section level3">
+<h3>Customizing plot layout</h3>
+<p>Once we have arrived at an informative plot, we can change the
+default layout and labels.</p>
+<pre class="r"><code>ggplot(age_sex_tattoos, aes(x = age, y = count)) +
+  geom_col(fill = &quot;blue&quot;) +
+  facet_wrap(~ sex) +
+  labs(title = &quot;Count of respondents with tattoos&quot;,
+  subtitle = &quot;By sex and age&quot;,
+  x = &quot;Age&quot;,
+  y = &quot;Count&quot;)</code></pre>
+<p>We can also change the default theme.</p>
+<pre class="r"><code>ggplot(age_sex_tattoos, aes(x = age, y = count)) +
+  geom_col(fill = &quot;blue&quot;) +
+  facet_wrap(~ sex) +
+  labs(title = &quot;Count of respondents with tattoos&quot;,
+  subtitle = &quot;By sex and age&quot;,
+  x = &quot;Age&quot;,
+  y = &quot;Count&quot;) +
+  theme_light()</code></pre>
+<div id="more-about-ggplot" class="section level4">
+<h4>More about ggplot</h4>
+<p>For more information, see the <code>ggplot()</code> documentation <a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>. The
+documentation page likewise includes a link to a PDF cheat sheet.</p>
+</div>
 </div>
 </div>
 <div id="resources" class="section level2">
@@ -735,6 +855,13 @@ Additive Models: With an Implementation in R. New York, USA: Springer.<a href="#
 <li id="fn2"><p>RDocumentation. <em>VGAMdata: ugss: Undergraduate
 Statistics Students Lifestyle Questionnaire</em>. Version 1.1-9.
 Accessed 2024-02-12.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>Wickham H, François R, Henry L, Müller K, Vaughan D
+(2023). <em>dplyr: A Grammar of Data Manipulation</em>. R package
+version 1.1.4, <a href="https://CRAN.R-project.org/package=dplyr" class="uri">https://CRAN.R-project.org/package=dplyr</a>.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>This tutorial: <a href="https://github.com/unmrds/all-of-us/blob/main/aou_tutorial.md" class="uri">https://github.com/unmrds/all-of-us/blob/main/aou_tutorial.md</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>Wickham H, François R, Henry L, Müller K, Vaughan D
+(2023). <em>dplyr: A Grammar of Data Manipulation</em>. R package
+version 1.1.4, <a href="https://CRAN.R-project.org/package=dplyr" class="uri">https://CRAN.R-project.org/package=dplyr</a>.<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 
