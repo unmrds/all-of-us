@@ -382,8 +382,45 @@ environment.</li>
 <p>No experience with either Jupyter Notebooks or R is necessary.</p>
 <p>We will be using Google’s Colab environment. No software installation
 or setup is needed, but learners will need a Google account.</p>
-<div id="create-a-jupyter-notebook-in-colab" class="section level2">
-<h2>Create a Jupyter Notebook in Colab</h2>
+<div id="using-the-all-of-us-public-data-browser" class="section level2">
+<h2>Using the All of Us public data browser</h2>
+<p>As mentioned above, this introduction to R and Jupyter Notebooks does
+not make use of <em>All of Us</em> data, for reasons relating to the
+DURA.</p>
+<p>However, as a way of framing our analysis and getting a preview of
+the kinds of data in <em>All of Us</em>, we will begin with a quick tour
+of the public data browser:</p>
+<p><a href="https://databrowser.researchallofus.org/"><em>All of Us</em>
+public data browser</a></p>
+<p>Note that most indicators are broken down by:</p>
+<ul>
+<li>Age</li>
+<li>Sex assigned at birth</li>
+</ul>
+<p>We will reproduce similar, high level aggregations in this tutorial,
+using the <em>Undergraduate Statistics Students Lifestyle
+Questionnaire</em> (ugss).</p>
+<p>Some documentation for this dataset is provided by <a href="https://www.rdocumentation.org/packages/VGAMdata/versions/1.1-9/topics/ugss">RDocumentation</a></p>
+<blockquote>
+<p>This data was collected online and anonymously in 2010. The
+respondents were students studying an undergraduate statistics course at
+a New Zealand university. Possibly there are duplicate students (due to
+failing and re-enrolling). All monies are in NZD. Note the data has had
+minimal checking. Most numerical variables tend to have measurement
+error, and all of them happen to be all integer-valued.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+</blockquote>
+<p><strong>ONE FINAL CAVEAT</strong></p>
+<p>In this workshop, we will be using a publicly available dataset to
+generate demographic descriptions of variables at a very high level of
+generalization. We note that the AoU research workbench provides access
+to data at the level of individual observations. Many analyses at a much
+more granular level are available to researchers using the AoU
+workbench. Nothing in this workshop is intended to imply that
+researchers using the AoU workbench will be limited to generating
+descriptive statistics.</p>
+</div>
+<div id="creating-a-jupyter-notebook-in-colab" class="section level2">
+<h2>Creating a Jupyter Notebook in Colab</h2>
 <ol style="list-style-type: decimal">
 <li>Log into Google Drive.</li>
 <li>Click on the <strong>+ New</strong> button and select <strong>More
@@ -424,7 +461,7 @@ creating a new cell.</li>
 <p>Try it! Copy the command below into your notebook and use one of the
 above methods to run it.</p>
 <pre class="r"><code>print(12 ** 2)</code></pre>
-<p><code>[1] 144</code></p>
+<pre><code>[1] 144</code></pre>
 <p>A cell can contain multiple lines of code. Note that in the next code
 cell, we are using the <code>&lt;-</code> symbol as the assignment
 operator. This is the conventional syntax for object and variable
@@ -432,7 +469,7 @@ assignments in R.</p>
 <pre class="r"><code>a &lt;- 5
 b &lt;- 3
 print(a ** b)</code></pre>
-<p><code>[1] 125</code></p>
+<pre><code>[1] 125</code></pre>
 <blockquote>
 <h4 id="tip-viewing-output">Tip: Viewing output</h4>
 <p>Using <code>print()</code> is a good way to make sure that the result
@@ -440,8 +477,8 @@ of a command is displayed in the output. It is required in some
 environments, but not in Colab:</p>
 <pre class="r"><code>a ** b
 b ** a</code></pre>
-<p><code>125</code><br />
-<code>243</code></p>
+<pre><code>125  
+243</code></pre>
 </blockquote>
 </div>
 <div id="installing-packages" class="section level2">
@@ -488,8 +525,8 @@ just loaded.</p>
 &#39;package:graphics&#39;&#39;package:grDevices&#39;&#39;package:utils&#39;&#39;package:datasets&#39;
 &#39;package:methods&#39;&#39;Autoloads&#39;&#39;package:base&#39;</code></pre>
 </div>
-<div id="load-the-data" class="section level2">
-<h2>Load the data</h2>
+<div id="reading-data" class="section level2">
+<h2>Reading data</h2>
 <p>We’re almost ready to analyze our sample data, which was selected for
 its similarity to some indicators included in the AoU data.</p>
 <p>There are different ways to load data in R, depending on whether the
@@ -519,6 +556,173 @@ this.</p>
 <p><code>var.info()</code></p>
 </blockquote>
 </div>
+<div id="inspecting-data" class="section level2">
+<h2>Inspecting data</h2>
+<p>A moment ago we used the <code>View()</code> function to open a
+tabular representation of the <code>ugss</code> data. This provided some
+information about the structure of the data, as did the output of the
+<code>var.info()</code> function, above.</p>
+<p>Other helpful functions for inspecting dataframes are listed below.
+Note that each of these functions has a required argument, which is the
+name of the dataframe about which we are asking for information. (For
+example <code>dim(ugss)</code>, etc.)</p>
+<ul>
+<li><code>dim()</code>: The number of rows and columns.</li>
+<li><code>nrow()</code>: The number of rows.</li>
+<li><code>ncol()</code>: The number of columns.</li>
+<li><code>names()</code>: Column names.</li>
+<li><code>str()</code>: Structure infoamtion.</li>
+<li><code>head()</code>: The first six rows.</li>
+<li><code>tail()</code>: The last six rows.</li>
+</ul>
+<p>Another useful function is <code>summary()</code>, which provides a
+default set of descriptive statistics about factors and numeric columns
+in a dataframe.</p>
+<pre class="r"><code>summary(ugss)</code></pre>
+<pre><code>     sex           age           eyes       piercings      pierced  
+ female:438   Min.   :17.00   blue : 98   Min.   : 0.000   No :430  
+ male  :366   1st Qu.:19.00   brown:523   1st Qu.: 0.000   Yes:374  
+              Median :20.00   green: 39   Median : 0.000            
+              Mean   :21.38   hazel: 48   Mean   : 1.295            
+              3rd Qu.:22.00   other: 96   3rd Qu.: 2.000            
+              Max.   :59.00               Max.   :14.000            
+                                                                    
+    tattoos       tattooed  glasses       sleep            study      
+ Min.   :0.0000   No :751   No :354   Min.   : 4.000   Min.   : 0.00  
+ 1st Qu.:0.0000   Yes: 53   Yes:450   1st Qu.: 7.000   1st Qu.: 5.00  
+ Median :0.0000                       Median : 8.000   Median :10.00  
+ Mean   :0.1157                       Mean   : 7.566   Mean   :14.71  
+ 3rd Qu.:0.0000                       3rd Qu.: 8.000   3rd Qu.:20.00  
+ Max.   :5.0000                       Max.   :12.000   Max.   :80.00  
+                                                                      
+       tv             movies       movies3m         sport    
+ Min.   : 0.000   Min.   : 0.000   No :125   other     :132  
+ 1st Qu.: 2.000   1st Qu.: 1.000   Yes:679   soccer    :126  
+ Median : 5.000   Median : 2.000             basketball:101  
+ Mean   : 7.331   Mean   : 3.188             badminton : 99  
+ 3rd Qu.:10.000   3rd Qu.: 4.000             none      : 62  
+ Max.   :90.000   Max.   :20.000             tennis    : 49  
+                                             (Other)   :235  
+        entertainment        fruit         income             rent        
+ meet.friends  :244   strawberry:146   Min.   :    0.0   Min.   :   0.00  
+ comp.vid.games:141   other     :121   1st Qu.:  126.0   1st Qu.:   0.00  
+ movies        :101   melon     : 99   Median :  200.0   Median :  46.50  
+ other         : 63   apple     : 79   Mean   :  329.4   Mean   :  86.09  
+ surf.web      : 63   banana    : 76   3rd Qu.:  300.0   3rd Qu.: 150.00  
+ parties       : 56   grapes    : 72   Max.   :25000.0   Max.   :1000.00  
+ (Other)       :136   (Other)   :211                                      
+    clothes             hair           tobacco        smokes   
+ Min.   :   0.00   Min.   :  0.00   Min.   :  0.000   No :742  
+ 1st Qu.:  20.00   1st Qu.: 15.00   1st Qu.:  0.000   Yes: 62  
+ Median :  50.00   Median : 25.00   Median :  0.000            
+ Mean   :  95.74   Mean   : 31.83   Mean   :  2.062            
+ 3rd Qu.: 100.00   3rd Qu.: 40.00   3rd Qu.:  0.000            
+ Max.   :1000.00   Max.   :350.00   Max.   :150.000            
+                                                               
+    alcohol       buy.alcohol    sendtxt         receivetxt      txts    
+ Min.   :  0.00   No :439     Min.   :  0.00   Min.   :  0.00   No : 13  
+ 1st Qu.:  0.00   Yes:365     1st Qu.: 10.00   1st Qu.: 10.00   Yes:791  
+ Median :  0.00               Median : 20.00   Median : 20.00            
+ Mean   : 11.83               Mean   : 28.74   Mean   : 29.36            
+ 3rd Qu.: 20.00               3rd Qu.: 40.00   3rd Qu.: 40.00            
+ Max.   :200.00               Max.   :127.00   Max.   :127.00            
+                                                                         
+     country              status   
+ NZ      :248   International:132  
+ China   :182   NZ.Citizen   :484  
+ SKorea  : 54   NZ.Resident  :188  
+ HK      : 39                      
+ Malaysia: 38                      
+ S.Korea : 34                      
+ (Other) :209</code></pre>
+</div>
+<div id="getting-help" class="section level2">
+<h2>Getting help</h2>
+<p>As noted, all of the functions used above have one required argument.
+We may not always know enough about a function to use it correctly. In
+these cases two useful tools for learning more about a function are
+<code>args()</code> and <code>help()</code>.</p>
+<pre class="r"><code>args(summary)</code></pre>
+<pre><code>function (object, ...) 
+NULL</code></pre>
+<p>For more detailed information, use <code>help()</code>, which opens
+the help page for the function used as the argument. Help pages often
+include example code for using a function.</p>
+<pre class="r"><code>help(summary)</code></pre>
+</div>
+<div id="manipulating-data-with-dplyr" class="section level2">
+<h2>Manipulating data with dplyr</h2>
+<p><code>dplyr</code> is a package that is included with the
+<code>tidyverse</code>, and which provides robust features for
+manipulating data. A strength of <code>dplyr</code> is its
+human-readability.</p>
+<p>A full demonstration of <code>dplyr</code> is beyond the scope of
+this tutorial. Here we will focus on some commonly used functions.</p>
+<div id="selecting-data" class="section level3">
+<h3>Selecting data</h3>
+<p>The <code>select()</code> function allows us to subset data by
+columns. Let’s say we want to subset the data by sex, age, and whether
+or not the individuals surveyed have tattoos.</p>
+<pre class="r"><code>ugss %&gt;%
+  select(sex, age, tattoos, tattooed)</code></pre>
+<p>Alternatively, we may be interested in the number of hours spent
+studying per week, by age.</p>
+<pre class="r"><code>ugss %&gt;%
+  select(age, study)</code></pre>
+</div>
+<div id="filtering-data" class="section level3">
+<h3>Filtering data</h3>
+<p>the <code>select()</code> method by itself returns all columns for a
+a subset of rows. The <code>filter()</code> function allows us to subset
+data by rows, where the values of a specified variable across rows meet
+a given condition.</p>
+<p>For example, we may want to subset the data to survey respondents
+under the age of 25.</p>
+<pre class="r"><code>ugss %&gt;%
+  filter(age &lt; 25)</code></pre>
+<p>We can specify multiple conditions. For everyone between the ages of
+20 and 25, we can add a second condition:</p>
+<pre class="r"><code>ugss %&gt;%
+  filter(age &gt;= 20 &amp; age &lt; 25)</code></pre>
+<p>Using <code>select()</code> and <code>filter()</code> together
+provides powerful data subsetting capabilities.</p>
+<p>For example, depending on our research question we may want to
+exclude people without tattoos from a demographic description of the
+tattoo data.</p>
+<pre class="r"><code>ugss %&gt;%
+  select(sex, age, tattoos, tattooed) %&gt;%
+  filter(tattooed == &quot;Yes&quot;)</code></pre>
+<p>Or maybe we are most interested in the study habits of adults aged
+18-22, which (may) capture the majority of undergrads in the study
+population. (Note that without more information about the population of
+study, we don’t know if this is an accurate assumption!)</p>
+<pre class="r"><code>ugss %&gt;%
+  filter(age &gt;= 18 &amp; age &lt;= 22) %&gt;%
+  select(age, study)</code></pre>
+</div>
+<div id="grouping-and-summarizing-data" class="section level3">
+<h3>Grouping and summarizing data</h3>
+<p>The data in the <em>All of US</em> public data browser are aggregated
+at different levels - sex, age, etc. In order to arrive at similar
+statistics with the <code>ugss</code> dataset, we need to group the data
+using the <code>group_by()</code> function. Statistics can then be
+calculated by group.</p>
+<p>Let’s group our age and hours spent studying subset by age.</p>
+<pre class="r"><code>ugss %&gt;%
+  filter(age &gt;= 18 &amp; age &lt;= 22) %&gt;%
+  select(age, study) %&gt;%
+  group_by(age)</code></pre>
+<p>You may notice that the output is no different from before we grouped
+the data! Groups exist logically. In order to “see” them, we need to
+calculate some statistic based on group membership. We use the
+<code>summarize()</code> function to do this.</p>
+<pre class="r"><code>ugss %&gt;%
+  filter(age &gt;= 18 &amp; age &lt;= 22) %&gt;%
+  select(age, study) %&gt;%
+  group_by(age) %&gt;%
+  summarise(c = n())</code></pre>
+</div>
+</div>
 <div id="resources" class="section level2">
 <h2>Resources</h2>
 </div>
@@ -528,6 +732,9 @@ this.</p>
 <ol>
 <li id="fn1"><p>Thomas W. Yee (2015). Vector Generalized Linear and
 Additive Models: With an Implementation in R. New York, USA: Springer.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>RDocumentation. <em>VGAMdata: ugss: Undergraduate
+Statistics Students Lifestyle Questionnaire</em>. Version 1.1-9.
+Accessed 2024-02-12.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

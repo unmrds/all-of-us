@@ -28,7 +28,44 @@ No experience with either Jupyter Notebooks or R is necessary.
 We will be using Google's Colab environment. No software installation or 
 setup is needed, but learners will need a Google account.
 
-## Create a Jupyter Notebook in Colab
+## Using the  All of Us public data browser
+
+As mentioned above, this introduction to R and Jupyter Notebooks does not
+make use of *All of Us* data, for reasons relating to the DURA.
+
+However, as a way of framing our analysis and getting a preview of the kinds
+of data in *All of Us*, we will begin with a quick tour of the public
+data browser:
+
+[*All of Us* public data browser](https://databrowser.researchallofus.org/)
+
+Note that most indicators are broken down by:
+
+- Age
+- Sex assigned at birth
+
+We will reproduce similar, high level aggregations in this tutorial, using the
+*Undergraduate Statistics Students Lifestyle Questionnaire* (ugss).
+
+Some documentation for this dataset is provided by
+[RDocumentation](https://www.rdocumentation.org/packages/VGAMdata/versions/1.1-9/topics/ugss)
+
+>
+>This data was collected online and anonymously in 2010. The respondents were students studying an undergraduate statistics course at a New Zealand university. Possibly there are duplicate students (due to failing and re-enrolling). All monies are in NZD. Note the data has had minimal checking. Most numerical variables tend to have measurement error, and all of them happen to be all integer-valued.[^2]
+>
+
+**ONE FINAL CAVEAT**
+
+In this workshop, we will be using a publicly available dataset to generate
+demographic descriptions of variables at a very high level of granularity. We
+note that the AoU research workbench provides access to data at the level of
+individual observations. Many analyses at a much more granular level are 
+available to researchers using the AoU workbench, using a wide array of modeling
+and clinical research methodologies. Nothing in this workshop is
+intended to imply that researchers using the AoU workbench will be limited to
+only generating descriptive statistics. 
+
+## Creating a Jupyter Notebook in Colab
 
 1. Log into Google Drive.
 1. Click on the **+ New** button and select **More -> Google Colaboratory**.
@@ -72,7 +109,9 @@ methods to run it.
 ~~~r
 print(12 ** 2)
 ~~~
-```[1] 144```
+~~~
+[1] 144
+~~~
 
 A cell can contain multiple lines of code. Note that in the next code cell,
 we are using the ```<-``` symbol as the assignment operator. This is the
@@ -83,7 +122,9 @@ a <- 5
 b <- 3
 print(a ** b)
 ~~~
-```[1] 125```
+~~~
+[1] 125
+~~~
 
 >
 > #### Tip: Viewing output
@@ -95,8 +136,10 @@ print(a ** b)
 >a ** b
 >b ** a
 >~~~
->```125```  
->```243```
+>~~~
+>125  
+>243
+>~~~
 
 ## Installing packages
 
@@ -153,16 +196,16 @@ output of this command, which now includes the packages we just loaded.
 ~~~r
 search()
 ~~~
-```
+~~~
 '.GlobalEnv''package:VGAMdata''package:VGAM''package:splines''package:stats4'
 'package:lubridate''package:forcats''package:stringr''package:dplyr'
 'package:purrr''package:readr''package:tidyr''package:tibble''package:ggplot2'
 'package:tidyverse''package:varhandle''jupyter:irkernel''package:stats'
 'package:graphics''package:grDevices''package:utils''package:datasets'
 'package:methods''Autoloads''package:base'
-```
+~~~
 
-## Load the data
+## Reading data
 
 We're almost ready to analyze our sample data, which was selected for its
 similarity to some indicators included in the AoU data.
@@ -202,6 +245,215 @@ View(ugss)  # note that is a capital V
 >
 >```var.info()```
 
+## Inspecting data
+
+A moment ago we used the ```View()``` function to open a tabular representation
+of the ```ugss``` data. This provided some information about the structure of
+the data, as did the output of the ```var.info()``` function, above.
+
+Other helpful functions for inspecting dataframes are listed below. 
+Note that each of these functions has a required argument, which is the name 
+of the dataframe about which we are asking for information. 
+(For example ```dim(ugss)```, etc.)
+
+- ```dim()```: The number of rows and columns.
+- ```nrow()```:  The number of rows.
+- ```ncol()```: The number of columns.
+- ```names()```: Column names.
+- ```str()```: Structure infoamtion.
+- ```head()```: The first six rows.
+- ```tail()```: The last six rows.
+
+Another useful function is ```summary()```, which provides a default set
+of descriptive statistics about factors and numeric columns in a dataframe.
+
+~~~r
+summary(ugss)
+~~~
+~~~
+     sex           age           eyes       piercings      pierced  
+ female:438   Min.   :17.00   blue : 98   Min.   : 0.000   No :430  
+ male  :366   1st Qu.:19.00   brown:523   1st Qu.: 0.000   Yes:374  
+              Median :20.00   green: 39   Median : 0.000            
+              Mean   :21.38   hazel: 48   Mean   : 1.295            
+              3rd Qu.:22.00   other: 96   3rd Qu.: 2.000            
+              Max.   :59.00               Max.   :14.000            
+                                                                    
+    tattoos       tattooed  glasses       sleep            study      
+ Min.   :0.0000   No :751   No :354   Min.   : 4.000   Min.   : 0.00  
+ 1st Qu.:0.0000   Yes: 53   Yes:450   1st Qu.: 7.000   1st Qu.: 5.00  
+ Median :0.0000                       Median : 8.000   Median :10.00  
+ Mean   :0.1157                       Mean   : 7.566   Mean   :14.71  
+ 3rd Qu.:0.0000                       3rd Qu.: 8.000   3rd Qu.:20.00  
+ Max.   :5.0000                       Max.   :12.000   Max.   :80.00  
+                                                                      
+       tv             movies       movies3m         sport    
+ Min.   : 0.000   Min.   : 0.000   No :125   other     :132  
+ 1st Qu.: 2.000   1st Qu.: 1.000   Yes:679   soccer    :126  
+ Median : 5.000   Median : 2.000             basketball:101  
+ Mean   : 7.331   Mean   : 3.188             badminton : 99  
+ 3rd Qu.:10.000   3rd Qu.: 4.000             none      : 62  
+ Max.   :90.000   Max.   :20.000             tennis    : 49  
+                                             (Other)   :235  
+        entertainment        fruit         income             rent        
+ meet.friends  :244   strawberry:146   Min.   :    0.0   Min.   :   0.00  
+ comp.vid.games:141   other     :121   1st Qu.:  126.0   1st Qu.:   0.00  
+ movies        :101   melon     : 99   Median :  200.0   Median :  46.50  
+ other         : 63   apple     : 79   Mean   :  329.4   Mean   :  86.09  
+ surf.web      : 63   banana    : 76   3rd Qu.:  300.0   3rd Qu.: 150.00  
+ parties       : 56   grapes    : 72   Max.   :25000.0   Max.   :1000.00  
+ (Other)       :136   (Other)   :211                                      
+    clothes             hair           tobacco        smokes   
+ Min.   :   0.00   Min.   :  0.00   Min.   :  0.000   No :742  
+ 1st Qu.:  20.00   1st Qu.: 15.00   1st Qu.:  0.000   Yes: 62  
+ Median :  50.00   Median : 25.00   Median :  0.000            
+ Mean   :  95.74   Mean   : 31.83   Mean   :  2.062            
+ 3rd Qu.: 100.00   3rd Qu.: 40.00   3rd Qu.:  0.000            
+ Max.   :1000.00   Max.   :350.00   Max.   :150.000            
+                                                               
+    alcohol       buy.alcohol    sendtxt         receivetxt      txts    
+ Min.   :  0.00   No :439     Min.   :  0.00   Min.   :  0.00   No : 13  
+ 1st Qu.:  0.00   Yes:365     1st Qu.: 10.00   1st Qu.: 10.00   Yes:791  
+ Median :  0.00               Median : 20.00   Median : 20.00            
+ Mean   : 11.83               Mean   : 28.74   Mean   : 29.36            
+ 3rd Qu.: 20.00               3rd Qu.: 40.00   3rd Qu.: 40.00            
+ Max.   :200.00               Max.   :127.00   Max.   :127.00            
+                                                                         
+     country              status   
+ NZ      :248   International:132  
+ China   :182   NZ.Citizen   :484  
+ SKorea  : 54   NZ.Resident  :188  
+ HK      : 39                      
+ Malaysia: 38                      
+ S.Korea : 34                      
+ (Other) :209
+~~~
+
+## Getting help
+
+As noted, all of the functions used above have one required argument. We may
+not always know enough about a function to use it correctly. In these cases
+two useful tools for learning more about a function are ```args()``` and
+```help()```.
+
+~~~r
+args(summary)
+~~~
+~~~
+function (object, ...) 
+NULL
+~~~
+
+For more detailed information, use ```help()```, which opens the help
+page for the function used as the argument. Help pages often include example
+code for using a function.
+
+~~~r
+help(summary)
+~~~
+
+## Manipulating data with dplyr
+
+```dplyr``` is a package that is included with the ```tidyverse```, and which
+provides robust features for manipulating data. A strength of ```dplyr``` is
+its human-readability.
+
+A full demonstration of ```dplyr``` is beyond the scope of this tutorial. Here
+we will focus on some commonly used functions.
+
+### Selecting data
+
+The ```select()``` function allows us to subset data by columns. Let's say
+we want to subset the data by sex, age, and whether or not the individuals 
+surveyed have tattoos. 
+
+~~~r
+ugss %>%
+  select(sex, age, tattoos, tattooed)
+~~~
+
+Alternatively, we may be interested in the number of hours spent studying per
+week, by age.
+
+~~~r
+ugss %>%
+  select(age, study)
+~~~
+
+### Filtering data
+
+the ```select()``` method by itself returns all columns for a a subset of rows.
+The ```filter()``` function allows us to subset data by rows, where the values
+of a specified variable across rows meet a given condition.
+
+For example, we may want to subset the data to survey respondents under the age
+of 25.
+
+~~~r
+ugss %>%
+  filter(age < 25)
+~~~
+
+We can specify multiple conditions. For everyone between the ages of 20 and 25, 
+we can add a second condition:
+
+~~~r
+ugss %>%
+  filter(age >= 20 & age < 25)
+~~~
+
+Using ```select()``` and ```filter()``` together provides powerful data
+subsetting capabilities.
+
+For example, depending on our research question we may want to exclude people
+without tattoos from a demographic description of the tattoo data.
+
+~~~r
+ugss %>%
+  select(sex, age, tattoos, tattooed) %>%
+  filter(tattooed == "Yes")
+~~~
+
+Or maybe we are most interested in the study habits of adults aged 18-22, which
+(may) capture the majority of undergrads in the study population. (Note that 
+without more information about the population of study, we don't know if this 
+is an accurate assumption!)
+
+~~~r
+ugss %>%
+  filter(age >= 18 & age <= 22) %>%
+  select(age, study)
+~~~
+
+### Grouping and summarizing data
+
+The data in the *All of US* public data browser are aggregated at different
+levels - sex, age, etc. In order to arrive at similar statistics with the
+```ugss``` dataset, we need to group the data using the ```group_by()```
+function. Statistics can then be calculated by group.
+
+Let's group our age and hours spent studying subset by age.
+
+~~~r
+ugss %>%
+  filter(age >= 18 & age <= 22) %>%
+  select(age, study) %>%
+  group_by(age)
+~~~
+
+You may notice that the output is no different from before we grouped the data!
+Groups exist logically. In order to "see" them, we need to calculate some
+statistic based on group membership. We use the ```summarize()``` function to
+do this.
+
+~~~r
+ugss %>%
+  filter(age >= 18 & age <= 22) %>%
+  select(age, study) %>%
+  group_by(age) %>%
+  summarise(c = n())
+~~~
+
 
 
 
@@ -209,6 +461,10 @@ View(ugss)  # note that is a capital V
 
 [^1]: Thomas W. Yee (2015). Vector Generalized Linear and Additive Models: 
 With an Implementation in R. New York, USA: Springer.
+
+[^2]: RDocumentation.
+*VGAMdata: ugss: Undergraduate Statistics Students Lifestyle Questionnaire*.
+Version 1.1-9. Accessed 2024-02-12.
 
 
 
