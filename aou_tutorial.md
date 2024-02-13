@@ -641,9 +641,8 @@ Version 1.1-9. Accessed 2024-02-12.
   
 [^4]: This tutorial: <https://github.com/unmrds/all-of-us/blob/main/aou_tutorial.md>
 
-[^5]: Wickham H, François R, Henry L, Müller K, Vaughan D (2023). _dplyr: A Grammar of
-  Data Manipulation_. R package version 1.1.4,
-  <https://CRAN.R-project.org/package=dplyr>.
+[^5]: <https://ggplot2.tidyverse.org/>
+
 
 
 
