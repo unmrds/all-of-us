@@ -49,7 +49,7 @@ We will reproduce similar, high level aggregations in this tutorial, using the
 *Undergraduate Statistics Students Lifestyle Questionnaire* (ugss).
 
 Some documentation for this dataset is provided by
-[CRAN VGAMdata Package (pdf documentation pg. 89)](https://cran.r-project.org/web/packages/VGAMdata/VGAMdata.pdf)
+[CRAN VGAMdata Package (PDF documentation pg. 89)](https://cran.r-project.org/web/packages/VGAMdata/VGAMdata.pdf)
 
 >
 >This data was collected online and anonymously in 2010. The respondents were students studying an undergraduate statistics course at a New Zealand university. Possibly there are duplicate students (due to failing and re-enrolling). All monies are in NZD. Note the data has had minimal checking. Most numerical variables tend to have measurement error, and all of them happen to be all integer-valued.[^2]
@@ -73,17 +73,22 @@ only generating descriptive statistics.
 1. Welcome to your Jupyter Notebook! The default name will be something like
 *Untitled.ipynb*. You can change this by clicking on the title in the top
 left of the window.
-1. New notebooks run Python by default. To change this, select
+1. New notebooks run Python 3 by default. To change this, if you wanted to use R for example, select
 **Runtime -> Change runtime type**. A window will open with some runtime
-options. Under the **Runtime type** menu, select **R**. Keep the default
-value for the hardware accelerator. Click **Save** to update.
+options. If you want to use the R language (this workshop focuses on Python), 
+under the **Runtime type** menu, select **R**. 
+
+Keep the default value for the hardware accelerator. Click **Save** to update.
 
 >
 > #### Tip: Getting back to your notebook
 >
 >You may want to return to your notebook after this workshop. If you return
 >to *My Drive*, your default space in Google Drive, you should see your notebook
->listed with your other files. 
+>listed with your other files. If you don't see your notebook in the top level
+>of your Drive you can also check the *Colab Notebooks* directory if it exists
+>as this is where Colab creates new notebooks by default if you don't create
+>them from a specific location in *My Drive*. 
 >
 >Let's check this now and verify that everyone can find their notebook.
 >
@@ -107,25 +112,25 @@ cell.
 Try it! Copy the command below into your notebook and use one of the above
 methods to run it. 
 
-~~~r
+```python
 print(12 ** 2)
-~~~
-~~~
+```
+```
 [1] 144
-~~~
+```
 
 A cell can contain multiple lines of code. Note that in the next code cell,
-we are using the ```<-``` symbol as the assignment operator. This is the
-conventional syntax for object and variable assignments in R.
+we are using the ```=``` symbol as the assignment operator. This is the
+conventional syntax for object and variable assignments in Python.
 
-~~~r
-a <- 5
-b <- 3
+```python
+a = 5
+b = 3
 print(a ** b)
-~~~
-~~~
+```
+```
 [1] 125
-~~~
+```
 
 >
 > #### Tip: Viewing output
@@ -133,14 +138,14 @@ print(a ** b)
 >is displayed in the output. It is required in some environments, but not in
 >Colab:
 >
->~~~r
+>```python
 >a ** b
 >b ** a
->~~~
->~~~
+>```
+>```
 >125  
 >243
->~~~
+>```
 
 ## Installing packages
 
@@ -150,9 +155,9 @@ we will use for our sample analysis.
 
 The package is called "VGAMdata."
 
-~~~r
+```python
 install.packages("VGAMdata")
-~~~
+```
 
 A difference between a Jupyter Notebook and other development environments
 is that notebooks don't by default provide any kind of quick-access view
@@ -160,9 +165,9 @@ of objects, variables, or datasets currently stored in memory. There may
 be other ways to accomplish this, but for this workshop we will install and
 use a package called "varhandle."
 
-~~~r
+```python
 install.packages("varhandle")
-~~~
+```
 
 ## Using packages
 
@@ -177,34 +182,34 @@ load them into our current environment.
 
 Let's see which packages are currently loaded in our environment.
 
-~~~r
+```python
 search()
-~~~
+```
 
 Now let's load the packages we just installed so the new functionality will
 be available to our current environment. We will also load the ```tidyverse```,
 which provides a useful set of tools for data cleaning and analysis.
 
-~~~r
+```python
 library(VGAMdata)
 library(varhandle)
 library(tidyverse)
-~~~
+```
 
 Re-run the ```search()``` command. Note the difference between the previous
 output of this command, which now includes the packages we just loaded.
 
-~~~r
+```python
 search()
-~~~
-~~~
+```
+```
 '.GlobalEnv''package:VGAMdata''package:VGAM''package:splines''package:stats4'
 'package:lubridate''package:forcats''package:stringr''package:dplyr'
 'package:purrr''package:readr''package:tidyr''package:tibble''package:ggplot2'
 'package:tidyverse''package:varhandle''jupyter:irkernel''package:stats'
 'package:graphics''package:grDevices''package:utils''package:datasets'
 'package:methods''Autoloads''package:base'
-~~~
+```
 
 ## Reading data
 
@@ -221,18 +226,18 @@ packages like the "VGAMdata" package we just installed or included with the
 base R packages. These datasets are great for learning R, or for trying
 new things. They can be loaded using the ```data()``` function.
 
-~~~r
+```python
 data(ugss)
-~~~
+```
 
 The result of the above command is a *promise* to load the data. In order to
 make it fully accessible to our environment, we need to do something with the
 data. In this case, we will open up a spreadsheet like view using the
 ```View()``` function.
 
-~~~r
+```python
 View(ugss)  # note that is a capital V
-~~~
+```
 
 >
 > #### Tip: Checking your environment
@@ -268,10 +273,10 @@ of the dataframe about which we are asking for information.
 Another useful function is ```summary()```, which provides a default set
 of descriptive statistics about factors and numeric columns in a dataframe.
 
-~~~r
+```python
 summary(ugss)
-~~~
-~~~
+```
+```
      sex           age           eyes       piercings      pierced  
  female:438   Min.   :17.00   blue : 98   Min.   : 0.000   No :430  
  male  :366   1st Qu.:19.00   brown:523   1st Qu.: 0.000   Yes:374  
@@ -328,7 +333,7 @@ summary(ugss)
  Malaysia: 38                      
  S.Korea : 34                      
  (Other) :209
-~~~
+```
 
 ## Getting help
 
@@ -337,21 +342,21 @@ not always know enough about a function to use it correctly. In these cases
 two useful tools for learning more about a function are ```args()``` and
 ```help()```.
 
-~~~r
+```python
 args(summary)
-~~~
-~~~
+```
+```
 function (object, ...) 
 NULL
-~~~
+```
 
 For more detailed information, use ```help()```, which opens the help
 page for the function used as the argument. Help pages often include example
 code for using a function.
 
-~~~r
+```python
 help(summary)
-~~~
+```
 
 ## Manipulating data with dplyr
 
@@ -368,18 +373,18 @@ The ```select()``` function allows us to subset data by columns. Let's say
 we want to subset the data by sex, age, and whether or not the individuals 
 surveyed have tattoos. 
 
-~~~r
+```python
 ugss %>%
   select(sex, age, tattoos, tattooed)
-~~~
+```
 
 Alternatively, we may be interested in the number of hours spent studying per
 week, by age.
 
-~~~r
+```python
 ugss %>%
   select(age, study)
-~~~
+```
 
 ### Filtering data
 
@@ -390,18 +395,18 @@ of a specified variable across rows meet a given condition.
 For example, we may want to subset the data to survey respondents under the age
 of 25.
 
-~~~r
+```python
 ugss %>%
   filter(age < 25)
-~~~
+```
 
 We can specify multiple conditions. For everyone between the ages of 20 and 25, 
 we can add a second condition:
 
-~~~r
+```python
 ugss %>%
   filter(age >= 20 & age < 25)
-~~~
+```
 
 Using ```select()``` and ```filter()``` together provides powerful data
 subsetting capabilities.
@@ -409,22 +414,22 @@ subsetting capabilities.
 For example, depending on our research question we may want to exclude people
 without tattoos from a demographic description of the tattoo data.
 
-~~~r
+```python
 ugss %>%
   select(sex, age, tattoos, tattooed) %>%
   filter(tattooed == "Yes")
-~~~
+```
 
 Or maybe we are most interested in the study habits of adults aged 18-22, which
 (may) capture the majority of undergrads in the study population. (Note that 
 without more information about the population of study, we don't know if this 
 is an accurate assumption!)
 
-~~~r
+```python
 ugss %>%
   filter(age >= 18 & age <= 22) %>%
   select(age, study)
-~~~
+```
 
 ### Grouping and summarizing data
 
@@ -435,72 +440,72 @@ function. Statistics can then be calculated by group.
 
 Let's group our age and hours spent studying subset by age.
 
-~~~r
+```python
 ugss %>%
   filter(age >= 18 & age <= 22) %>%
   select(age, study) %>%
   group_by(age)
-~~~
+```
 
 You may notice that the output is no different from before we grouped the data!
 Groups exist logically. In order to "see" them, we need to calculate some
 statistic based on group membership. We use the ```summarize()``` function to
 do this.
 
-~~~r
+```python
 ugss %>%
   filter(age >= 18 & age <= 22) %>%
   select(age, study) %>%
   group_by(age) %>%
   summarise(average_time_studying = mean(study))
-~~~
+```
 
 It's worth highlighting that throughout this process of data manipulation we
 have not altered the underlying raw data. We want to leave our data intact,
 but we may also be interested in saving our aggregations. Once we are happy
 with the result, we can do that by assigning the output to a new object.
 
-~~~r
+```python
 age_study <- ugss %>%
   filter(age >= 18 & age <= 22) %>%
   select(age, study) %>%
   group_by(age) %>%
   summarise(average_time_studying = mean(study))
-~~~
+```
 
 To see the output, we call the new object
 
-~~~r
+```python
 age_study
-~~~
+```
 
 We can quickly inspect the ```age_study``` object with ```var.info()```.
 
-~~~r
+```python
 var.info()
-~~~
+```
 
 Data can be grouped according to multiple variables. It may make sense to group
 our tattoo subset by sex and age. We will also generate a count statistics
 for each group. 
 
-~~~r
+```python
 ugss %>%
   select(sex, age, tattoos, tattooed) %>%
   filter(tattooed == "Yes") %>%
   group_by(sex, age) %>%
   summarize(count = n())
-~~~
+```
 
 If this looks good, we will save to a new object.
 
-~~~r
+```python
 age_sex_tattoos <- ugss %>%
   select(sex, age, tattoos, tattooed) %>%
   filter(tattooed == "Yes") %>%
   group_by(sex, age) %>%
   summarize(count = n())
-~~~
+```
 
 ### More about dplyr
 
@@ -529,9 +534,9 @@ The overall process for developing plots with ```ggplot()``` is
 
 Let's create a plot object.
 
-~~~r
+```python
 ggplot(age_study, aes(x = age, y = average_time_studying))
-~~~
+```
 
 When we execute this code cell, the output is an empty plot. The axes are
 labeled, but the data haven't actually been plotted. This is because
@@ -540,10 +545,10 @@ geometries to do this.
 
 Let's use a "count" plot.
 
-~~~r
+```python
 ggplot(age_study, aes(x = age, y = average_time_studying)) +
   geom_col()
-~~~
+```
 
 The output is a plot of average time spent studying by age, for study
 participants between 18-22 years of age. 
@@ -552,54 +557,54 @@ By way of demonstration, we can also combine ```dplyr``` and ```ggplot```
 functions for a bigger picture  view. This time we will include
 all of the observations.
 
-~~~r
+```python
 ugss %>%
   select(age, study) %>%
   ggplot(aes(x = age, y = study)) +
   geom_point()
-~~~
+```
 
 This gives us a different sense of the distribution across the full dataset.
 We can make the plot a little more informative by setting some of the style
 arguments in the ```geom_point()``` layer.
 
-~~~r
+```python
 ugss %>%
   select(age, study) %>%
   ggplot(aes(x = age, y = study)) +
   geom_point(alpha = 0.5, size = 3.0, color = "blue")
-~~~
+```
 
 We will also visualize our tattoo data. Since we grouped by both age and sex,
 it makes sense to add a facet layer to separate the plots by groups.
 
-~~~r
+```python
 ggplot(age_sex_tattoos, aes(x = age, y = count))
-~~~
+```
 
 Add a geometry. 
 
-~~~r
+```python
 ggplot(age_sex_tattoos, aes(x = age, y = count)) +
   geom_col()
-~~~
+```
 
 Note that the resulting plot does not include information about respondents'
 sex, even though that data is included in our subset. One way to represent
 those data in the plots is to facet by sex.
 
-~~~r
+```python
 ggplot(age_sex_tattoos, aes(x = age, y = count)) +
   geom_col() +
   facet_wrap(~ sex)
-~~~
+```
 
 ### Customizing plot layout
 
 Once we have arrived at an informative plot, we can change the default layout
 and labels.
 
-~~~r
+```python
 ggplot(age_sex_tattoos, aes(x = age, y = count)) +
   geom_col(fill = "blue") +
   facet_wrap(~ sex) +
@@ -607,11 +612,11 @@ ggplot(age_sex_tattoos, aes(x = age, y = count)) +
   subtitle = "By sex and age",
   x = "Age",
   y = "Count")
-~~~
+```
 
 We can also change the default theme.
 
-~~~r
+```python
 ggplot(age_sex_tattoos, aes(x = age, y = count)) +
   geom_col(fill = "blue") +
   facet_wrap(~ sex) +
@@ -620,7 +625,7 @@ ggplot(age_sex_tattoos, aes(x = age, y = count)) +
   x = "Age",
   y = "Count") +
   theme_light()
-~~~
+```
 
 #### More about ggplot
 
