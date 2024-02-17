@@ -116,7 +116,7 @@ methods to run it.
 print(12 ** 2)
 ```
 ```
-[1] 144
+144
 ```
 
 A cell can contain multiple lines of code. Note that in the next code cell,
@@ -129,116 +129,81 @@ b = 3
 print(a ** b)
 ```
 ```
-[1] 125
+125
 ```
 
 >
 > #### Tip: Viewing output
 >Using ```print()``` is a good way to make sure that the result of a command
->is displayed in the output. It is required in some environments, but not in
->Colab:
+>is displayed in the output. Only the output of the last executed command will
+>be displayed in the output of an executed cell (this is different from the 
+>behavior of Collab with R notebooks):
 >
 >```python
 >a ** b
 >b ** a
 >```
 >```
->125  
 >243
 >```
 
 ## Installing packages
 
-The R environment in Colab comes with several useful packages already 
-installed. However, we need to install the package that includes the dataset
-we will use for our sample analysis.
+The Python environment in Colab comes with many useful packages already 
+installed. However, if we need to install a package that is not already
+installed we can use the "pip magic" command ```%pip install <package name>```
+to install the needed package. 
 
-The package is called "VGAMdata."
-
-```python
-install.packages("VGAMdata")
-```
-
-A difference between a Jupyter Notebook and other development environments
-is that notebooks don't by default provide any kind of quick-access view
-of objects, variables, or datasets currently stored in memory. There may
-be other ways to accomplish this, but for this workshop we will install and
-use a package called "varhandle."
+We will be using the Python *pandas* package for reading, viewing and interacting with
+tabular data in our demonstration. It is already installed in the Colab 
+environment, but if we needed to install it we could execute the following
+command in a cell in the notebook:
 
 ```python
-install.packages("varhandle")
+%pip install pandas
 ```
 
 ## Using packages
 
 *Packages* are sets of functions and methods that extend the functionality
-of the base set of packages included in R. Very often, packages are developed
-around accomplishing a specific set of tasks. For example, there is a package
-called ```lubridate``` that includes methods for working with dates.
+of the base set of packages included in Python. Very often, packages are developed
+around accomplishing a specific set of tasks.
 
 In general is only necessary to install packages once, after which they
-are available any time we use R. However, in order to use packages we need to
-load them into our current environment.
+are available to load any time we use the local Python environment. However, in order 
+to use packages we need to load them into our current environment.
 
-Let's see which packages are currently loaded in our environment.
-
-```python
-search()
-```
-
-Now let's load the packages we just installed so the new functionality will
-be available to our current environment. We will also load the ```tidyverse```,
-which provides a useful set of tools for data cleaning and analysis.
-
-```python
-library(VGAMdata)
-library(varhandle)
-library(tidyverse)
-```
-
-Re-run the ```search()``` command. Note the difference between the previous
-output of this command, which now includes the packages we just loaded.
-
-```python
-search()
-```
-```
-'.GlobalEnv''package:VGAMdata''package:VGAM''package:splines''package:stats4'
-'package:lubridate''package:forcats''package:stringr''package:dplyr'
-'package:purrr''package:readr''package:tidyr''package:tibble''package:ggplot2'
-'package:tidyverse''package:varhandle''jupyter:irkernel''package:stats'
-'package:graphics''package:grDevices''package:utils''package:datasets'
-'package:methods''Autoloads''package:base'
-```
+Now let's load the *pandas* package for use in loading and interacting with
+our demonstration dataset. This command demonstrates the base command ```import pandas```
+with the addition of the ```as pd``` option to define a short name reference
+to the *pandas* package. ```pd``` is a commonly used short reference to the *pandas*
+package and you will commonly see it referenced in documentation demonstrating
+use of the package. 
 
 ## Reading data
 
 We're almost ready to analyze our sample data, which was selected for its
 similarity to some indicators included in the AoU data.
 
-There are different ways to load data in R, depending on whether the data
+There are different ways to load data in Python, depending on whether the data
 are stored in a file, accessible from the web, saved in particular file
 formats, etc. We note that loading data in the AoU researcher workbench will
 probably require some different commands.
 
-That said, there are many sample datasets available within R, either through
-packages like the "VGAMdata" package we just installed or included with the
-base R packages. These datasets are great for learning R, or for trying
-new things. They can be loaded using the ```data()``` function.
+The dataset that we will be working with was originally shared as a dataset
+as part of the R ```VGAMdata``` package. For this demonstration it was exported
+as a Comma-separated-value (CSV) file and placed in a web-accessible location 
+for download and use in Python. 
+
+The *pandas* package can read both local and remote CSV files to create a local
+pandas *dataframe* with which we can work. To read the remote file we need to
+provide the URL of the remote file to the ```read_csv``` *pandas* function. 
 
 ```python
-data(ugss)
+file_url = "https://raw.githubusercontent.com/unmrds/all-of-us/main/data/uggs.csv"
+uggs = pd.read_csv(file_url)
 ```
-
-The result of the above command is a *promise* to load the data. In order to
-make it fully accessible to our environment, we need to do something with the
-data. In this case, we will open up a spreadsheet like view using the
-```View()``` function.
-
-```python
-View(ugss)  # note that is a capital V
-```
-
+++++++++++++++++++ progress thus far ++++++++++++++++++++++++++++++++++++++++++
 >
 > #### Tip: Checking your environment
 >
