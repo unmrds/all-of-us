@@ -395,7 +395,7 @@ so on all the way up to 804.
 
 We can select a subset of rows using the index positions of the starting row
 and the ending row separated by a colon. Note that pandas will select all rows
-from the starting position **up to but not including** the ending row. Keeping 
+from the starting position **up to but not including** the ending position. Keeping 
 in mind that the first row  has an index position of 0, we can view the 
 first five  rows with the following:
 
