@@ -374,7 +374,7 @@ ugss[["age", "eyes"]]
 
 ### Subsetting data by row
 
-The indexing method above returns all columns for a a subset of rows. Often,
+The indexing method above returns all rows for a a subset of columns. Often,
 we also want to subset by row. In pandas, this is accomplished using row
 index positions. Alternatively, we can also use row index labels, though we 
 note that in many cases the row labels will be the same as row index positions.
