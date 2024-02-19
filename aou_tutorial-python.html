@@ -840,9 +840,9 @@ print(under_25)</code></pre>
 803   Yes    China  International  </code></pre>
 <p>Though we included every column in our subset above, we can also
 specify the columns to include in the subset. If we are interested in
-analyzing a (hypothetical!) correlation between eye color and glasses
-among non-smokers, we could exclude any variables that are not of
-interest.</p>
+analyzing a (hypothetical!) correlation between eye color and use of
+eyeglasses among non-smokers, we could exclude any variables that are
+not of interest.</p>
 <p>Note that we are including two conditions below:</p>
 <pre class="python"><code>under_25_eyes_glasses = ugss[(ugss[&quot;age&quot;] &lt; 25) &amp; (ugss[&quot;smokes&quot;] == &quot;No&quot;)][[&quot;sex&quot;, &quot;age&quot;, &quot;eyes&quot;, &quot;glasses&quot;]].copy()
 print(under_25_eyes_glasses)</code></pre>
@@ -860,146 +860,172 @@ print(under_25_eyes_glasses)</code></pre>
 802  female   20  brown      No
 
 [661 rows x 4 columns]</code></pre>
+<p>The above can be difficult to read! Another, more verbose way to
+arrive at the same result would be:</p>
+<pre class="python"><code>under_25 = ugss[ugss[&quot;age&quot;] &lt; 25].copy()
+under_25_ns = under_25[under_25[&quot;smokes&quot;] == &quot;No&quot;].copy()
+under_25_eyes_glasses = under_25_ns[[&quot;sex&quot;, &quot;age&quot;, &quot;eyes&quot;, &quot;glasses&quot;]].copy()
+print(under_25_eyes_glasses)</code></pre>
+<pre><code>        sex  age   eyes glasses
+0      male   22  brown     Yes
+1    female   21  brown     Yes
+2      male   21  brown      No
+3      male   22  brown      No
+4    female   20  brown     Yes
+..      ...  ...    ...     ...
+797    male   24  brown      No
+799  female   21   blue      No
+800    male   19   blue      No
+801    male   24  brown     Yes
+802  female   20  brown      No
+
+[661 rows x 4 columns]</code></pre>
+<p>This alternative approach requires more lines of code, but may be
+easier to understand when you come back to your script later.</p>
 </div>
 <div id="grouping-and-summarizing-data" class="section level3">
 <h3>Grouping and summarizing data</h3>
 <p>The data in the <em>All of US</em> public data browser are aggregated
 at different levels - sex, age, etc. In order to arrive at similar
 statistics with the <code>ugss</code> dataset, we need to group the data
-using the <code>group_by()</code> function. Statistics can then be
+using the <code>groupby()</code> function. Statistics can then be
 calculated by group.</p>
-<p>Let’s group our age and hours spent studying subset by age.</p>
-<pre class="python"><code>ugss %&gt;%
-  filter(age &gt;= 18 &amp; age &lt;= 22) %&gt;%
-  select(age, study) %&gt;%
-  group_by(age)</code></pre>
-<p>You may notice that the output is no different from before we grouped
-the data! Groups exist logically. In order to “see” them, we need to
-calculate some statistic based on group membership. We use the
-<code>summarize()</code> function to do this.</p>
-<pre class="python"><code>ugss %&gt;%
-  filter(age &gt;= 18 &amp; age &lt;= 22) %&gt;%
-  select(age, study) %&gt;%
-  group_by(age) %&gt;%
-  summarise(average_time_studying = mean(study))</code></pre>
-<p>It’s worth highlighting that throughout this process of data
-manipulation we have not altered the underlying raw data. We want to
-leave our data intact, but we may also be interested in saving our
-aggregations. Once we are happy with the result, we can do that by
-assigning the output to a new object.</p>
-<pre class="python"><code>age_study &lt;- ugss %&gt;%
-  filter(age &gt;= 18 &amp; age &lt;= 22) %&gt;%
-  select(age, study) %&gt;%
-  group_by(age) %&gt;%
-  summarise(average_time_studying = mean(study))</code></pre>
-<p>To see the output, we call the new object</p>
-<pre class="python"><code>age_study</code></pre>
-<p>We can quickly inspect the <code>age_study</code> object with
-<code>var.info()</code>.</p>
-<pre class="python"><code>var.info()</code></pre>
-<p>Data can be grouped according to multiple variables. It may make
-sense to group our tattoo subset by sex and age. We will also generate a
-count statistics for each group.</p>
-<pre class="python"><code>ugss %&gt;%
-  select(sex, age, tattoos, tattooed) %&gt;%
-  filter(tattooed == &quot;Yes&quot;) %&gt;%
-  group_by(sex, age) %&gt;%
-  summarize(count = n())</code></pre>
-<p>If this looks good, we will save to a new object.</p>
-<pre class="python"><code>age_sex_tattoos &lt;- ugss %&gt;%
-  select(sex, age, tattoos, tattooed) %&gt;%
-  filter(tattooed == &quot;Yes&quot;) %&gt;%
-  group_by(sex, age) %&gt;%
-  summarize(count = n())</code></pre>
+<p>For example, we may be interested in analyzing study habits by age
+group. For a general overview, we can calculate the average hours per
+week that respondents spend studying, broken down by age.</p>
+<p>As note above, we can accomplish a lot in python with one line of
+code. From here on, however, we are going to stick with the verbose
+approach. Since you may want to refer to this tutorial later, we want
+the code to be as clear as possible!</p>
+<pre class="python"><code># subset to roughly college age respondents (18-22)
+college_age = ugss[(ugss[&quot;age&quot;] &gt;= 18) &amp; (ugss[&quot;age&quot;] &lt;= 22)].copy()
+
+# group by age
+college_age_groups = college_age.groupby(&quot;age&quot;)
+
+# for each group, calculate the average time spent studying per week
+print(college_age_groups[&quot;study&quot;].mean())</code></pre>
+<pre><code>age
+18    15.425926
+19    12.938547
+20    13.481283
+21    14.338028
+22    15.862500
+Name: study, dtype: float64</code></pre>
+<p>Once we have created our groups, we can calculate statistics for any
+numeric column.</p>
+<pre class="python"><code># get the averahe number of piercing and tattoos per group
+college_age_groups[[&quot;piercings&quot;, &quot;tattoos&quot;]].mean()</code></pre>
+<pre><code>     piercings   tattoos
+age                     
+18    0.944444  0.037037
+19    1.273743  0.106145
+20    1.577540  0.096257
+21    1.345070  0.140845
+22    1.087500  0.137500</code></pre>
+<p>We can group by multiple variables. Perhaps we want to break our
+analysis down by both age and sex.</p>
+<pre class="python"><code># regroup college_age subset by age and sex
+college_age_gender_groups = college_age.groupby([&quot;age&quot;, &quot;sex&quot;])
+
+# for each group, calculate the average time spend studying per week
+print(college_age_gender_groups[&quot;study&quot;].mean())</code></pre>
+<pre><code>age  sex   
+18   female    15.761905
+     male      15.212121
+19   female    14.924731
+     male      10.790698
+20   female    14.796610
+     male      11.231884
+21   female    15.123457
+     male      13.295082
+22   female    17.219512
+     male      14.435897
+Name: study, dtype: float64</code></pre>
+<p>Again, we can calculate statistics on multiple columns.</p>
+<pre class="python"><code>college_age_gender_groups[[&quot;piercings&quot;, &quot;tattoos&quot;, &quot;study&quot;]].mean()</code></pre>
+<pre><code>            piercings   tattoos      study
+age sex                                   
+18  female   2.047619  0.095238  15.761905
+    male     0.242424  0.000000  15.212121
+19  female   2.182796  0.129032  14.924731
+    male     0.290698  0.081395  10.790698
+20  female   2.398305  0.118644  14.796610
+    male     0.173913  0.057971  11.231884
+21  female   2.160494  0.111111  15.123457
+    male     0.262295  0.180328  13.295082
+22  female   1.804878  0.121951  17.219512
+    male     0.333333  0.153846  14.435897</code></pre>
 </div>
-<div id="more-about-dplyr" class="section level3">
-<h3>More about dplyr</h3>
-<p><code>dpyr()</code> includes many other functions and methods for
-working with data. Some functions we recommend learning about include
-<code>mutate()</code>, <code>rename()</code>, and different kinds of
-joins.</p>
-<p>More information can be found at the <code>dplyr</code> documentation
-<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. The
-documentation page includes a helpful cheat sheet.</p>
 </div>
-</div>
-<div id="visualizing-data-with-ggplot" class="section level2">
-<h2>Visualizing data with ggplot</h2>
-<p>The final topic of this introduction to using R in Jupyter is
+<div id="visualizing-data-with-plotnine" class="section level2">
+<h2>Visualizing data with plotnine</h2>
+<p>The final topic of this introduction to using Python in Jupyter is
 visualizing data.</p>
-<p><code>ggplot()</code> is designed for iterative development of
-publication-ready plots. As such, for the most part we will develop each
-plot within a single code cell. For future reference, the step-by-step
-process is included in the copy of this tutorial online <a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>.</p>
-<p>The overall process for developing plots with <code>ggplot()</code>
+<p><code>plotnine</code> is a python library designed for iterative
+development of publication-ready plots. It is a python port of the
+popular <code>ggplot()</code> package in R. For the most part we will
+develop each plot within a single code cell. For future reference, the
+step-by-step process is included in the copy of this tutorial online <a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>.</p>
+<p>The overall process for developing plots with <code>plotnine</code>
 is</p>
 <ol style="list-style-type: decimal">
 <li>Define plot axes and global aesthetics in a plot object.</li>
 <li>Set layers of plot styles and aesthetics using geometries.</li>
 <li>Customize labels and themes.</li>
 </ol>
-<p>Let’s create a plot object.</p>
-<pre class="python"><code>ggplot(age_study, aes(x = age, y = average_time_studying))</code></pre>
+<p>Let’s get plotting! First we have to import the <code>plotnine</code>
+library.</p>
+<pre class="python"><code>import plotnine as p9</code></pre>
+<p>Following the process described above, the first step is to define a
+plot object.</p>
+<pre class="python"><code>p9.ggplot(data=ugss, mapping = p9.aes(x = &quot;age&quot;, y = &quot;study&quot;))</code></pre>
 <p>When we execute this code cell, the output is an empty plot. The axes
 are labeled, but the data haven’t actually been plotted. This is because
-<code>ggplot()</code> needs to know how we intend to represent the data.
+<code>plotnine</code> needs to know how we intend to represent the data.
 We use geometries to do this.</p>
-<p>Let’s use a “count” plot.</p>
-<pre class="python"><code>ggplot(age_study, aes(x = age, y = average_time_studying)) +
-  geom_col()</code></pre>
-<p>The output is a plot of average time spent studying by age, for study
-participants between 18-22 years of age.</p>
-<p>By way of demonstration, we can also combine <code>dplyr</code> and
-<code>ggplot</code> functions for a bigger picture view. This time we
-will include all of the observations.</p>
-<pre class="python"><code>ugss %&gt;%
-  select(age, study) %&gt;%
-  ggplot(aes(x = age, y = study)) +
-  geom_point()</code></pre>
-<p>This gives us a different sense of the distribution across the full
-dataset. We can make the plot a little more informative by setting some
-of the style arguments in the <code>geom_point()</code> layer.</p>
-<pre class="python"><code>ugss %&gt;%
-  select(age, study) %&gt;%
-  ggplot(aes(x = age, y = study)) +
-  geom_point(alpha = 0.5, size = 3.0, color = &quot;blue&quot;)</code></pre>
-<p>We will also visualize our tattoo data. Since we grouped by both age
-and sex, it makes sense to add a facet layer to separate the plots by
-groups.</p>
-<pre class="python"><code>ggplot(age_sex_tattoos, aes(x = age, y = count))</code></pre>
-<p>Add a geometry.</p>
-<pre class="python"><code>ggplot(age_sex_tattoos, aes(x = age, y = count)) +
-  geom_col()</code></pre>
-<p>Note that the resulting plot does not include information about
-respondents’ sex, even though that data is included in our subset. One
-way to represent those data in the plots is to facet by sex.</p>
-<pre class="python"><code>ggplot(age_sex_tattoos, aes(x = age, y = count)) +
-  geom_col() +
-  facet_wrap(~ sex)</code></pre>
+<p>Since we are plotting two continuous variables, a scatter plot may be
+informative.</p>
+<pre class="python"><code>p9.ggplot(data=ugss, mapping = p9.aes(x = &quot;age&quot;, y = &quot;study&quot;)) + \
+p9.geom_point()</code></pre>
+<p>The plot gives us a sense of the distribution of time spent studying
+across the full dataset. We can make the plot a little more informative
+by setting some of the style arguments in the <code>geom_point()</code>
+layer.</p>
+<pre class="python"><code>p9.ggplot(data=ugss, mapping = p9.aes(x = &quot;age&quot;, y = &quot;study&quot;)) + \
+p9.geom_point(alpha = 0.5, size = 3.0, color = &quot;blue&quot;)</code></pre>
+<p>We can refine the above by adding a layer aesthetic to include
+information about whether or not respondents wear glasses.</p>
+<pre class="python"><code>p9.ggplot(data=ugss, mapping = p9.aes(x = &quot;age&quot;, y = &quot;study&quot;)) + \
+p9.geom_point(alpha = 0.5, size = 3.0, mapping = p9.aes(color = &quot;glasses&quot;))</code></pre>
+<p>Faceting plots allows us to include even more information. In this
+case, we can separate the plots by sex.</p>
+<pre class="python"><code>p9.ggplot(data=ugss, mapping = p9.aes(x = &quot;age&quot;, y = &quot;study&quot;)) + \
+p9.geom_point(alpha = 0.5, size = 3.0, mapping = p9.aes(color = &quot;glasses&quot;))  + \
+p9.facet_wrap(&quot;sex&quot;)</code></pre>
 <div id="customizing-plot-layout" class="section level3">
 <h3>Customizing plot layout</h3>
 <p>Once we have arrived at an informative plot, we can change the
 default layout and labels.</p>
-<pre class="python"><code>ggplot(age_sex_tattoos, aes(x = age, y = count)) +
-  geom_col(fill = &quot;blue&quot;) +
-  facet_wrap(~ sex) +
-  labs(title = &quot;Count of respondents with tattoos&quot;,
-  subtitle = &quot;By sex and age&quot;,
-  x = &quot;Age&quot;,
-  y = &quot;Count&quot;)</code></pre>
+<pre class="python"><code>p9.ggplot(data=ugss, mapping = p9.aes(x = &quot;age&quot;, y = &quot;study&quot;)) + \
+p9.geom_point(alpha = 0.5, size = 3.0, mapping = p9.aes(color = &quot;glasses&quot;))  + \
+p9.facet_wrap(&quot;sex&quot;) + \
+p9.labs(title = &quot;Time spent studying by age&quot;, \
+       subtitle = &quot;Per sex and eyeglass use&quot;, \
+       x = &quot;Age&quot;, \
+       y = &quot;Hours spent studying per week&quot;)</code></pre>
 <p>We can also change the default theme.</p>
-<pre class="python"><code>ggplot(age_sex_tattoos, aes(x = age, y = count)) +
-  geom_col(fill = &quot;blue&quot;) +
-  facet_wrap(~ sex) +
-  labs(title = &quot;Count of respondents with tattoos&quot;,
-  subtitle = &quot;By sex and age&quot;,
-  x = &quot;Age&quot;,
-  y = &quot;Count&quot;) +
-  theme_light()</code></pre>
-<div id="more-about-ggplot" class="section level4">
-<h4>More about ggplot</h4>
-<p>For more information, see the <code>ggplot()</code> documentation <a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>. The
-documentation page likewise includes a link to a PDF cheat sheet.</p>
+<pre class="python"><code>p9.ggplot(data=ugss, mapping = p9.aes(x = &quot;age&quot;, y = &quot;study&quot;)) + \
+p9.geom_point(alpha = 0.5, size = 3.0, mapping = p9.aes(color = &quot;glasses&quot;))  + \
+p9.facet_wrap(&quot;sex&quot;) + \
+p9.labs(title = &quot;Time spent studying by age&quot;, \
+       subtitle = &quot;Per sex and eyeglass use&quot;, \
+       x = &quot;Age&quot;, \
+       y = &quot;Hours spent studying per week&quot;) + \
+p9.theme_light()</code></pre>
+<div id="more-about-plotnine" class="section level4">
+<h4>More about plotnine</h4>
+<p>For more information, see the <code>plotnine</code> documentation <a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>.</p>
 </div>
 </div>
 </div>
@@ -1015,11 +1041,8 @@ Additive Models: With an Implementation in R. New York, USA: Springer.<a href="#
 <li id="fn2"><p>RDocumentation. <em>VGAMdata: ugss: Undergraduate
 Statistics Students Lifestyle Questionnaire</em>. Version 1.1-9.
 Accessed 2024-02-12.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>Wickham H, François R, Henry L, Müller K, Vaughan D
-(2023). <em>dplyr: A Grammar of Data Manipulation</em>. R package
-version 1.1.4, <a href="https://CRAN.R-project.org/package=dplyr" class="uri">https://CRAN.R-project.org/package=dplyr</a>.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p>This tutorial: <a href="https://github.com/unmrds/all-of-us/blob/main/aou_tutorial.md" class="uri">https://github.com/unmrds/all-of-us/blob/main/aou_tutorial.md</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
-<li id="fn5"><p><a href="https://ggplot2.tidyverse.org/" class="uri">https://ggplot2.tidyverse.org/</a><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>This tutorial: <a href="https://github.com/unmrds/all-of-us/blob/main/aou_tutorial-python.md" class="uri">https://github.com/unmrds/all-of-us/blob/main/aou_tutorial-python.md</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p><a href="https://plotnine.readthedocs.io/en/stable/index.html" class="uri">https://plotnine.readthedocs.io/en/stable/index.html</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

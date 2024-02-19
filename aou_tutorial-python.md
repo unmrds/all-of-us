@@ -760,7 +760,7 @@ data.
 publication-ready plots. It is a python port of the popular ```ggplot()```
 package in R. For the most part we will develop each plot within a single
 code cell. For future reference, the step-by-step process is included in the
-copy of this tutorial online [^4].
+copy of this tutorial online [^3].
 
 The overall process for developing plots with ```plotnine``` is
 
@@ -849,10 +849,9 @@ p9.labs(title = "Time spent studying by age", \
 p9.theme_light()
 ```
 
-#### More about ggplot
+#### More about plotnine
 
-For more information, see the ```plotnine``` documentation [^5]. The 
-documentation page likewise includes a link to a PDF cheat sheet.
+For more information, see the ```plotnine``` documentation [^4]. 
 
 ## Resources
 
@@ -863,13 +862,10 @@ With an Implementation in R. New York, USA: Springer.
 *VGAMdata: ugss: Undergraduate Statistics Students Lifestyle Questionnaire*.
 Version 1.1-9. Accessed 2024-02-12.
 
-[^3]: Wickham H, François R, Henry L, Müller K, Vaughan D (2023). _dplyr: A Grammar of
-  Data Manipulation_. R package version 1.1.4,
-  <https://CRAN.R-project.org/package=dplyr>.
   
-[^4]: This tutorial: <https://github.com/unmrds/all-of-us/blob/main/aou_tutorial-python.md>
+[^3]: This tutorial: <https://github.com/unmrds/all-of-us/blob/main/aou_tutorial-python.md>
 
-[^5]: <https://plotnine.readthedocs.io/en/stable/index.html>
+[^4]: <https://plotnine.readthedocs.io/en/stable/index.html>
 
 
 
