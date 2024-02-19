@@ -651,6 +651,7 @@ print(under_25_eyes_glasses)
 This alternative approach requires more lines of code, but may be easier to
 understand when you come back to your script later.
 
+
 ### Grouping and summarizing data
 
 The data in the *All of US* public data browser are aggregated at different
@@ -658,85 +659,99 @@ levels - sex, age, etc. In order to arrive at similar statistics with the
 ```ugss``` dataset, we need to group the data using the ```groupby()```
 function. Statistics can then be calculated by group.
 
-Let's group our age and hours spent studying subset by age.
+For example, we may be interested in analyzing study habits by age group. For a
+general overview, we can calculate the average hours per week that respondents
+spend studying, broken down by age.
+
+As note above, we can accomplish a lot in python with one line of code. From
+here on, however, we are going to stick with the verbose approach. Since you
+may want to refer to this tutorial later, we want the code to be as clear as
+possible!
 
 ```python
-ugss %>%
-  filter(age >= 18 & age <= 22) %>%
-  select(age, study) %>%
-  group_by(age)
+# subset to roughly college age respondents (18-22)
+college_age = ugss[(ugss["age"] >= 18) & (ugss["age"] <= 22)].copy()
+
+# group by age
+college_age_groups = college_age.groupby("age")
+
+# for each group, calculate the average time spend studying per week
+print(college_age_groups["study"].mean())
+```
+```
+age
+18    15.425926
+19    12.938547
+20    13.481283
+21    14.338028
+22    15.862500
+Name: study, dtype: float64
 ```
 
-You may notice that the output is no different from before we grouped the data!
-Groups exist logically. In order to "see" them, we need to calculate some
-statistic based on group membership. We use the ```summarize()``` function to
-do this.
+Once we have created our groups, we can calculate statistics for any numeric
+column.
 
 ```python
-ugss %>%
-  filter(age >= 18 & age <= 22) %>%
-  select(age, study) %>%
-  group_by(age) %>%
-  summarise(average_time_studying = mean(study))
+# get the averahe number of piercing and tattoos per group
+college_age_groups[["piercings", "tattoos"]].mean()
+```
+```
+     piercings   tattoos
+age                     
+18    0.944444  0.037037
+19    1.273743  0.106145
+20    1.577540  0.096257
+21    1.345070  0.140845
+22    1.087500  0.137500
 ```
 
-It's worth highlighting that throughout this process of data manipulation we
-have not altered the underlying raw data. We want to leave our data intact,
-but we may also be interested in saving our aggregations. Once we are happy
-with the result, we can do that by assigning the output to a new object.
+We can group by multiple variables. Perhaps we want to break our analysis 
+down by both age and sex.
 
 ```python
-age_study <- ugss %>%
-  filter(age >= 18 & age <= 22) %>%
-  select(age, study) %>%
-  group_by(age) %>%
-  summarise(average_time_studying = mean(study))
+# regroup college_age subset by age and sex
+college_age_gender_groups = college_age.groupby(["age", "sex"])
+
+# for each group, calculate the average time spend studying per week
+print(college_age_gender_groups["study"].mean())
+```
+```
+age  sex   
+18   female    15.761905
+     male      15.212121
+19   female    14.924731
+     male      10.790698
+20   female    14.796610
+     male      11.231884
+21   female    15.123457
+     male      13.295082
+22   female    17.219512
+     male      14.435897
+Name: study, dtype: float64
 ```
 
-To see the output, we call the new object
+Again, we can calculate statistics on multiple columns.
 
 ```python
-age_study
+college_age_gender_groups[["piercings", "tattoos", "study"]].mean()
+```
+```
+            piercings   tattoos      study
+age sex                                   
+18  female   2.047619  0.095238  15.761905
+    male     0.242424  0.000000  15.212121
+19  female   2.182796  0.129032  14.924731
+    male     0.290698  0.081395  10.790698
+20  female   2.398305  0.118644  14.796610
+    male     0.173913  0.057971  11.231884
+21  female   2.160494  0.111111  15.123457
+    male     0.262295  0.180328  13.295082
+22  female   1.804878  0.121951  17.219512
+    male     0.333333  0.153846  14.435897
 ```
 
-We can quickly inspect the ```age_study``` object with ```var.info()```.
 
-```python
-var.info()
-```
-
-Data can be grouped according to multiple variables. It may make sense to group
-our tattoo subset by sex and age. We will also generate a count statistics
-for each group. 
-
-```python
-ugss %>%
-  select(sex, age, tattoos, tattooed) %>%
-  filter(tattooed == "Yes") %>%
-  group_by(sex, age) %>%
-  summarize(count = n())
-```
-
-If this looks good, we will save to a new object.
-
-```python
-age_sex_tattoos <- ugss %>%
-  select(sex, age, tattoos, tattooed) %>%
-  filter(tattooed == "Yes") %>%
-  group_by(sex, age) %>%
-  summarize(count = n())
-```
-
-### More about dplyr
-
-```dpyr()``` includes many other functions and methods for working with data.
-Some functions we recommend learning about include ```mutate()```, 
-```rename()```, and different kinds of joins.
-
-More information can be found at the ```dplyr``` documentation [^3]. The 
-documentation page includes a helpful cheat sheet.
-
-## Visualizing data with ggplot
+## Visualizing data with plotnine
 
 The final topic of this introduction to using R in Jupyter is visualizing
 data.
