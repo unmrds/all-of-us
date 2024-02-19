@@ -382,7 +382,7 @@ ugss %>%
 
 ### Filtering data
 
-the ```select()``` method by itself returns all columns for a a subset of rows.
+The ```select()``` method by itself returns all rows for a a subset of columns.
 The ```filter()``` function allows us to subset data by rows, where the values
 of a specified variable across rows meet a given condition.
 

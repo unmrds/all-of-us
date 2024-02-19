@@ -287,56 +287,92 @@ max    150.000000  200.000000  127.000000  127.000000
 
 ## Getting help
 
-As noted, all of the functions used above have one required argument. We may
-not always know enough about a function to use it correctly. In these cases
-two useful tools for learning more about a function are ```args()``` and
-```help()```.
+We may not always know enough about a function to use it correctly. 
+In these cases a useful tool for learning more about a function 
+or an object is ```help()```.
 
 ```python
-args(summary)
+help(ugss)   # Help information about dataframes. 'ugss' is an instance of a dataframe object.
 ```
-```
-function (object, ...) 
-NULL
-```
-
-For more detailed information, use ```help()```, which opens the help
-page for the function used as the argument. Help pages often include example
-code for using a function.
 
 ```python
-help(summary)
+help(ugss.describe())  # Help information about the describe() function.
 ```
 
-## Manipulating data with dplyr
 
-```dplyr``` is a package that is included with the ```tidyverse```, and which
-provides robust features for manipulating data. A strength of ```dplyr``` is
-its human-readability.
+## Manipulating data
 
-A full demonstration of ```dplyr``` is beyond the scope of this tutorial. Here
+Pandas is a powerful data manipulation library for python. It is designed to
+work efficiently with large datasets.
+
+A full demonstration of pandas is beyond the scope of this tutorial. Here
 we will focus on some commonly used functions.
 
-### Selecting data
+### Subsetting data by column
 
-The ```select()``` function allows us to subset data by columns. Let's say
-we want to subset the data by sex, age, and whether or not the individuals 
-surveyed have tattoos. 
-
-```python
-ugss %>%
-  select(sex, age, tattoos, tattooed)
-```
-
-Alternatively, we may be interested in the number of hours spent studying per
-week, by age.
+Dataframes in pandas are indexed for fast retrieval. Indexing is done on rows
+and columns. We can view information about the indices using the ```info()```
+function or the ```axes``` attribute.
 
 ```python
-ugss %>%
-  select(age, study)
+ugss.axes
+```
+```
+[RangeIndex(start=0, stop=804, step=1),
+ Index(['sex', 'age', 'eyes', 'piercings', 'pierced', 'tattoos', 'tattooed',
+        'glasses', 'sleep', 'study', 'tv', 'movies', 'movies3m', 'sport',
+        'entertainment', 'fruit', 'income', 'rent', 'clothes', 'hair',
+        'tobacco', 'smokes', 'alcohol', 'buy.alcohol', 'sendtxt', 'receivetxt',
+        'txts', 'country', 'status'],
+       dtype='object')]
 ```
 
-### Filtering data
+To subset data to a single column, use the column name in square brackets after
+the name of the dataframe.
+
+```python
+ugss["age"]
+```
+```
+0      22
+1      21
+2      21
+3      22
+4      20
+       ..
+799    21
+800    19
+801    24
+802    20
+803    22
+Name: age, Length: 804, dtype: int64
+```
+
+To subset by more than one column, use a list of column names. Note that lists
+in python are defined using square brackets, so we need to use a double set
+of square brackets when we subset by multiple columns.
+
+```python
+ugss[["age", "eyes"]]
+```
+```
+ 	age 	eyes
+0 	22 	brown
+1 	21 	brown
+2 	21 	brown
+3 	22 	brown
+4 	20 	brown
+... 	... 	...
+799 	21 	blue
+800 	19 	blue
+801 	24 	brown
+802 	20 	brown
+803 	22 	brown
+
+804 rows × 2 columns
+```
+
+### Subsetting data by row
 
 the ```select()``` method by itself returns all columns for a a subset of rows.
 The ```filter()``` function allows us to subset data by rows, where the values
