@@ -374,48 +374,13 @@ ugss[["age", "eyes"]]
 
 ### Subsetting data by row
 
-the ```select()``` method by itself returns all columns for a a subset of rows.
-The ```filter()``` function allows us to subset data by rows, where the values
-of a specified variable across rows meet a given condition.
+The indexing method above returns all columns for a a subset of rows. Often,
+we also want to subset by row. In pandas, this is accomplished using row
+index positions. Alternatively, we can also use row index labels, though we 
+note that in many cases the row labels will be the same as row index positions.
 
-For example, we may want to subset the data to survey respondents under the age
-of 25.
 
-```python
-ugss %>%
-  filter(age < 25)
-```
 
-We can specify multiple conditions. For everyone between the ages of 20 and 25, 
-we can add a second condition:
-
-```python
-ugss %>%
-  filter(age >= 20 & age < 25)
-```
-
-Using ```select()``` and ```filter()``` together provides powerful data
-subsetting capabilities.
-
-For example, depending on our research question we may want to exclude people
-without tattoos from a demographic description of the tattoo data.
-
-```python
-ugss %>%
-  select(sex, age, tattoos, tattooed) %>%
-  filter(tattooed == "Yes")
-```
-
-Or maybe we are most interested in the study habits of adults aged 18-22, which
-(may) capture the majority of undergrads in the study population. (Note that 
-without more information about the population of study, we don't know if this 
-is an accurate assumption!)
-
-```python
-ugss %>%
-  filter(age >= 18 & age <= 22) %>%
-  select(age, study)
-```
 
 ### Grouping and summarizing data
 
