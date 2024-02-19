@@ -622,7 +622,7 @@ print(under_25_eyes_glasses)
 [661 rows x 4 columns]
 ```
 
-We note the above can be difficult to read! Another, more verbose way to 
+The above can be difficult to read! Another, more verbose way to 
 arrive at the same result would be:
 
 ```python
@@ -675,7 +675,7 @@ college_age = ugss[(ugss["age"] >= 18) & (ugss["age"] <= 22)].copy()
 # group by age
 college_age_groups = college_age.groupby("age")
 
-# for each group, calculate the average time spend studying per week
+# for each group, calculate the average time spent studying per week
 print(college_age_groups["study"].mean())
 ```
 ```
@@ -753,85 +753,72 @@ age sex
 
 ## Visualizing data with plotnine
 
-The final topic of this introduction to using R in Jupyter is visualizing
+The final topic of this introduction to using Python in Jupyter is visualizing
 data.
 
-```ggplot()``` is designed for iterative development of publication-ready 
-plots. As such, for the most part we will develop each plot within a single
+```plotnine``` is a python library designed for iterative development of 
+publication-ready plots. It is a python port of the popular ```ggplot()```
+package in R. For the most part we will develop each plot within a single
 code cell. For future reference, the step-by-step process is included in the
 copy of this tutorial online [^4].
 
-The overall process for developing plots with ```ggplot()``` is
+The overall process for developing plots with ```plotnine``` is
 
 1. Define plot axes and global aesthetics in a plot object.
 1. Set layers of plot styles and aesthetics using geometries.
 1. Customize labels and themes.
 
-Let's create a plot object.
+Let's get plotting! First we have to import the ```plotnine```
+library.
 
 ```python
-ggplot(age_study, aes(x = age, y = average_time_studying))
+import plotnine as p9
+```
+
+Following the process described above, the first step is to define a plot
+object. 
+
+```python
+p9.ggplot(data=ugss, mapping = p9.aes(x = "age", y = "study"))
 ```
 
 When we execute this code cell, the output is an empty plot. The axes are
 labeled, but the data haven't actually been plotted. This is because
-```ggplot()``` needs to know how we intend to represent the data. We use
+```plotnine``` needs to know how we intend to represent the data. We use
 geometries to do this.
 
-Let's use a "count" plot.
+Since we are plotting two continuous variables, a scatter plot may be
+informative. 
 
 ```python
-ggplot(age_study, aes(x = age, y = average_time_studying)) +
-  geom_col()
+p9.ggplot(data=ugss, mapping = p9.aes(x = "age", y = "study")) + \
+p9.geom_point()
 ```
 
-The output is a plot of average time spent studying by age, for study
-participants between 18-22 years of age. 
-
-By way of demonstration, we can also combine ```dplyr``` and ```ggplot``` 
-functions for a bigger picture  view. This time we will include
-all of the observations.
+The plot gives us a sense of the distribution of time spent studying
+across the full dataset. We can make the plot a little more informative by 
+setting some of the style arguments in the ```geom_point()``` layer.
 
 ```python
-ugss %>%
-  select(age, study) %>%
-  ggplot(aes(x = age, y = study)) +
-  geom_point()
+p9.ggplot(data=ugss, mapping = p9.aes(x = "age", y = "study")) + \
+p9.geom_point(alpha = 0.5, size = 3.0, color = "blue")
 ```
 
-This gives us a different sense of the distribution across the full dataset.
-We can make the plot a little more informative by setting some of the style
-arguments in the ```geom_point()``` layer.
+We can refine the above by adding a layer aesthetic to include information about
+whether or not respondents wear glasses.
 
 ```python
-ugss %>%
-  select(age, study) %>%
-  ggplot(aes(x = age, y = study)) +
-  geom_point(alpha = 0.5, size = 3.0, color = "blue")
+p9.ggplot(data=ugss, mapping = p9.aes(x = "age", y = "study")) + \
+p9.geom_point(alpha = 0.5, size = 3.0, mapping = p9.aes(color = "glasses"))
 ```
 
-We will also visualize our tattoo data. Since we grouped by both age and sex,
-it makes sense to add a facet layer to separate the plots by groups.
+Faceting plots allows us to include even more information. In this case, we
+can separate the plots by sex.
 
 ```python
-ggplot(age_sex_tattoos, aes(x = age, y = count))
-```
-
-Add a geometry. 
-
-```python
-ggplot(age_sex_tattoos, aes(x = age, y = count)) +
-  geom_col()
-```
-
-Note that the resulting plot does not include information about respondents'
-sex, even though that data is included in our subset. One way to represent
-those data in the plots is to facet by sex.
-
-```python
-ggplot(age_sex_tattoos, aes(x = age, y = count)) +
-  geom_col() +
-  facet_wrap(~ sex)
+p9.ggplot(data=ugss, mapping = p9.aes(x = "age", y = "study")) + \
+p9.geom_point(alpha = 0.5, size = 3.0, mapping = p9.aes(color = "glasses"))  + \
+p9.facet_wrap("sex")
 ```
 
 ### Customizing plot layout
@@ -840,31 +827,31 @@ Once we have arrived at an informative plot, we can change the default layout
 and labels.
 
 ```python
-ggplot(age_sex_tattoos, aes(x = age, y = count)) +
-  geom_col(fill = "blue") +
-  facet_wrap(~ sex) +
-  labs(title = "Count of respondents with tattoos",
-  subtitle = "By sex and age",
-  x = "Age",
-  y = "Count")
+p9.ggplot(data=ugss, mapping = p9.aes(x = "age", y = "study")) + \
+p9.geom_point(alpha = 0.5, size = 3.0, mapping = p9.aes(color = "glasses"))  + \
+p9.facet_wrap("sex") + \
+p9.labs(title = "Time spent studying by age", \
+       subtitle = "Per sex and eyeglass use", \
+       x = "Age", \
+       y = "Hours spent studying per week")
 ```
 
 We can also change the default theme.
 
 ```python
-ggplot(age_sex_tattoos, aes(x = age, y = count)) +
-  geom_col(fill = "blue") +
-  facet_wrap(~ sex) +
-  labs(title = "Count of respondents with tattoos",
-  subtitle = "By sex and age",
-  x = "Age",
-  y = "Count") +
-  theme_light()
+p9.ggplot(data=ugss, mapping = p9.aes(x = "age", y = "study")) + \
+p9.geom_point(alpha = 0.5, size = 3.0, mapping = p9.aes(color = "glasses"))  + \
+p9.facet_wrap("sex") + \
+p9.labs(title = "Time spent studying by age", \
+       subtitle = "Per sex and eyeglass use", \
+       x = "Age", \
+       y = "Hours spent studying per week") + \
+p9.theme_light()
 ```
 
 #### More about ggplot
 
-For more information, see the ```ggplot()``` documentation [^5]. The 
+For more information, see the ```plotnine``` documentation [^5]. The 
 documentation page likewise includes a link to a PDF cheat sheet.
 
 ## Resources
@@ -880,9 +867,9 @@ Version 1.1-9. Accessed 2024-02-12.
   Data Manipulation_. R package version 1.1.4,
   <https://CRAN.R-project.org/package=dplyr>.
   
-[^4]: This tutorial: <https://github.com/unmrds/all-of-us/blob/main/aou_tutorial.md>
+[^4]: This tutorial: <https://github.com/unmrds/all-of-us/blob/main/aou_tutorial-python.md>
 
-[^5]: <https://ggplot2.tidyverse.org/>
+[^5]: <https://plotnine.readthedocs.io/en/stable/index.html>
 
 
 
