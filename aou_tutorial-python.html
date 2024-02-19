@@ -615,55 +615,251 @@ object is <code>help()</code>.</p>
 <pre class="python"><code>help(ugss)   # Help information about dataframes. &#39;ugss&#39; is an instance of a dataframe object.</code></pre>
 <pre class="python"><code>help(ugss.describe())  # Help information about the describe() function.</code></pre>
 </div>
-<div id="manipulating-data-with-dplyr" class="section level2">
-<h2>Manipulating data with dplyr</h2>
-<p><code>dplyr</code> is a package that is included with the
-<code>tidyverse</code>, and which provides robust features for
-manipulating data. A strength of <code>dplyr</code> is its
-human-readability.</p>
-<p>A full demonstration of <code>dplyr</code> is beyond the scope of
-this tutorial. Here we will focus on some commonly used functions.</p>
-<div id="selecting-data" class="section level3">
-<h3>Selecting data</h3>
-<p>The <code>select()</code> function allows us to subset data by
-columns. Let’s say we want to subset the data by sex, age, and whether
-or not the individuals surveyed have tattoos.</p>
-<pre class="python"><code>ugss %&gt;%
-  select(sex, age, tattoos, tattooed)</code></pre>
-<p>Alternatively, we may be interested in the number of hours spent
-studying per week, by age.</p>
-<pre class="python"><code>ugss %&gt;%
-  select(age, study)</code></pre>
+<div id="manipulating-data" class="section level2">
+<h2>Manipulating data</h2>
+<p>Pandas is a powerful data manipulation library for python. It is
+designed to work efficiently with large datasets.</p>
+<p>A full demonstration of pandas is beyond the scope of this tutorial.
+Here we will focus on some commonly used functions.</p>
+<div id="subsetting-data-by-column" class="section level3">
+<h3>Subsetting data by column</h3>
+<p>Dataframes in pandas are indexed for fast retrieval. Indexing is done
+on rows and columns. We can view information about the indices using the
+<code>info()</code> function or the <code>axes</code> attribute.</p>
+<pre class="python"><code>ugss.axes</code></pre>
+<pre><code>[RangeIndex(start=0, stop=804, step=1),
+ Index([&#39;sex&#39;, &#39;age&#39;, &#39;eyes&#39;, &#39;piercings&#39;, &#39;pierced&#39;, &#39;tattoos&#39;, &#39;tattooed&#39;,
+        &#39;glasses&#39;, &#39;sleep&#39;, &#39;study&#39;, &#39;tv&#39;, &#39;movies&#39;, &#39;movies3m&#39;, &#39;sport&#39;,
+        &#39;entertainment&#39;, &#39;fruit&#39;, &#39;income&#39;, &#39;rent&#39;, &#39;clothes&#39;, &#39;hair&#39;,
+        &#39;tobacco&#39;, &#39;smokes&#39;, &#39;alcohol&#39;, &#39;buy.alcohol&#39;, &#39;sendtxt&#39;, &#39;receivetxt&#39;,
+        &#39;txts&#39;, &#39;country&#39;, &#39;status&#39;],
+       dtype=&#39;object&#39;)]</code></pre>
+<p>To subset data to a single column, use the column name in square
+brackets after the name of the dataframe.</p>
+<pre class="python"><code>ugss[&quot;age&quot;]</code></pre>
+<pre><code>0      22
+1      21
+2      21
+3      22
+4      20
+       ..
+799    21
+800    19
+801    24
+802    20
+803    22
+Name: age, Length: 804, dtype: int64</code></pre>
+<p>To subset by more than one column, use a list of column names. Note
+that lists in python are defined using square brackets, so we need to
+use a double set of square brackets when we subset by multiple
+columns.</p>
+<pre class="python"><code>ugss[[&quot;age&quot;, &quot;eyes&quot;]]</code></pre>
+<pre><code>    age     eyes
+0   22  brown
+1   21  brown
+2   21  brown
+3   22  brown
+4   20  brown
+...     ...     ...
+799     21  blue
+800     19  blue
+801     24  brown
+802     20  brown
+803     22  brown
+
+804 rows × 2 columns</code></pre>
 </div>
-<div id="filtering-data" class="section level3">
-<h3>Filtering data</h3>
-<p>the <code>select()</code> method by itself returns all columns for a
-a subset of rows. The <code>filter()</code> function allows us to subset
-data by rows, where the values of a specified variable across rows meet
-a given condition.</p>
-<p>For example, we may want to subset the data to survey respondents
-under the age of 25.</p>
-<pre class="python"><code>ugss %&gt;%
-  filter(age &lt; 25)</code></pre>
-<p>We can specify multiple conditions. For everyone between the ages of
-20 and 25, we can add a second condition:</p>
-<pre class="python"><code>ugss %&gt;%
-  filter(age &gt;= 20 &amp; age &lt; 25)</code></pre>
-<p>Using <code>select()</code> and <code>filter()</code> together
-provides powerful data subsetting capabilities.</p>
-<p>For example, depending on our research question we may want to
-exclude people without tattoos from a demographic description of the
-tattoo data.</p>
-<pre class="python"><code>ugss %&gt;%
-  select(sex, age, tattoos, tattooed) %&gt;%
-  filter(tattooed == &quot;Yes&quot;)</code></pre>
-<p>Or maybe we are most interested in the study habits of adults aged
-18-22, which (may) capture the majority of undergrads in the study
-population. (Note that without more information about the population of
-study, we don’t know if this is an accurate assumption!)</p>
-<pre class="python"><code>ugss %&gt;%
-  filter(age &gt;= 18 &amp; age &lt;= 22) %&gt;%
-  select(age, study)</code></pre>
+<div id="subsetting-data-by-row" class="section level3">
+<h3>Subsetting data by row</h3>
+<p>The indexing method above returns all columns for a a subset of rows.
+Often, we also want to subset by row. In pandas, this is accomplished
+using row index positions. Alternatively, we can also use row index
+labels, though we note that in many cases the row labels will be the
+same as row index positions.</p>
+<p>First let’s view information about the row index.</p>
+<pre class="python"><code>ugss.index</code></pre>
+<pre><code>RangeIndex(start=0, stop=804, step=1)</code></pre>
+<p>The output indicates that the row index starts with 0 and goes up to
+804, by increments of 1. This means that there are 805 rows in our data.
+The first row has an index position of 0, the second has an index
+position of 1, and so on all the way up to 804.</p>
+<p>We can select a subset of rows using the index positions of the
+starting row and the ending row separated by a colon. Note that pandas
+will select all rows from the starting position <strong>up to but not
+including</strong> the ending row. Keeping in mind that the first row
+has an index position of 0, we can view the first five rows with the
+following:</p>
+<pre class="python"><code>ugss[0:5] # Output rows with index positions 0, 1, 2, 3, 4 BUT NOT 5.</code></pre>
+<pre><code>      sex  age   eyes  piercings pierced  tattoos tattooed glasses  sleep  \
+0    male   22  brown          0      No        0       No     Yes      7   
+1  female   21  brown          2     Yes        0       No     Yes      8   
+2    male   21  brown          0      No        0       No      No      7   
+3    male   22  brown          0      No        0       No      No      7   
+4  female   20  brown          4     Yes        0       No     Yes      7   
+
+   study  ...  hair  tobacco smokes alcohol buy.alcohol sendtxt  receivetxt  \
+0     40  ...    15        0     No       0          No      10          10   
+1     12  ...    50        0     No      10         Yes      10          10   
+2      2  ...    15        0     No       0          No      25          25   
+3      2  ...    15        0     No       0          No      20          20   
+4      3  ...    20        0     No      10         Yes       5           5   
+
+   txts  country       status  
+0   Yes    China   NZ.Citizen  
+1   Yes       NZ   NZ.Citizen  
+2   Yes       HK   NZ.Citizen  
+3   Yes       NZ  NZ.Resident  
+4   Yes       NZ   NZ.Citizen  
+
+[5 rows x 29 columns]</code></pre>
+<p>When a subset begins with the first row of data, or ends with the
+last row, we can exclude those index positions.</p>
+<pre class="python"><code>ugss[:5] # Same result as running the ugss.head() function.</code></pre>
+<pre class="python"><code>ugss[799:804] # Same result as running the ugss.tail() function.</code></pre>
+<p>We can also use negative indexing. The below will also output the
+last five rows of data, and is useful in cases where we may not know how
+many rows of data we have.</p>
+<pre class="python"><code>ugss[-5:] # Also the same result as running the ugss.tail() function.</code></pre>
+<p>If we want to select a single row based on its row index position, we
+need to explicitly specify the index position label using
+<code>iloc</code>:</p>
+<pre class="python"><code>ugss.iloc[0]</code></pre>
+<pre><code>sex                        male
+age                          22
+eyes                      brown
+piercings                     0
+pierced                      No
+tattoos                       0
+tattooed                     No
+glasses                     Yes
+sleep                         7
+study                        40
+tv                            0
+movies                        0
+movies3m                     No
+sport                basketball
+entertainment    comp.vid.games
+fruit                     melon
+income                      198
+rent                        120
+clothes                      20
+hair                         15
+tobacco                       0
+smokes                       No
+alcohol                       0
+buy.alcohol                  No
+sendtxt                      10
+receivetxt                   10
+txts                        Yes
+country                   China
+status               NZ.Citizen
+Name: 0, dtype: object</code></pre>
+<p>Another way to select the first five rows of data:</p>
+<pre class="python"><code>ugss.iloc[0:5]</code></pre>
+</div>
+<div id="subsetting-by-row-and-column" class="section level3">
+<h3>Subsetting by row and column</h3>
+<p>We can combine the indexing methods above to select by both row and
+column. Let’s say we interested in the values of the “sex” and “age”
+columns, for the first five observations.</p>
+<pre class="python"><code>ugss[:5][[&quot;sex&quot;, &quot;age&quot;]]</code></pre>
+<pre><code>      sex  age
+0    male   22
+1  female   21
+2    male   21
+3    male   22
+4  female   20</code></pre>
+</div>
+<div id="conditional-subsetting" class="section level3">
+<h3>Conditional subsetting</h3>
+<p>Often, we are most interested in subsetting data based on conditions.
+That is, we are interested in the set of observations for which the
+values of certain variables fall within specified parameters.</p>
+<p>For example, perhaps we want to limit our analysis to respondents
+under the age of 25:</p>
+<pre class="python"><code>ugss[&quot;age&quot;] &gt; 25</code></pre>
+<pre><code>0      True
+1      True
+2      True
+3      True
+4      True
+       ... 
+799    True
+800    True
+801    True
+802    True
+803    True
+Name: age, Length: 804, dtype: bool</code></pre>
+<p>Note that the output of the above is not the subset we’re interested
+in! Instead, the output shows us the result of the evaluation of the
+condition against each row of the dataset.</p>
+<p>In order to actually get the subset of rows where the value of the
+“age” variable is less than 25, we need to use the condition as the row
+selector in place of the slicing syntax demonstrated above.</p>
+<p>If we are going to manipulate the subset, it’s also good to
+explicitly state that we want a copy of the data.</p>
+<pre class="python"><code>under_25 = ugss[ugss[&quot;age&quot;] &lt; 25].copy()
+print(under_25)</code></pre>
+<pre><code>        sex  age   eyes  piercings pierced  tattoos tattooed glasses  sleep  \
+0      male   22  brown          0      No        0       No     Yes      7   
+1    female   21  brown          2     Yes        0       No     Yes      8   
+2      male   21  brown          0      No        0       No      No      7   
+3      male   22  brown          0      No        0       No      No      7   
+4    female   20  brown          4     Yes        0       No     Yes      7   
+..      ...  ...    ...        ...     ...      ...      ...     ...    ...   
+799  female   21   blue          2     Yes        0       No      No      8   
+800    male   19   blue          0      No        0       No      No      7   
+801    male   24  brown          0      No        0       No     Yes      9   
+802  female   20  brown          2     Yes        0       No      No      5   
+803    male   22  brown          0      No        0       No     Yes      7   
+
+     study  ...  hair  tobacco smokes alcohol buy.alcohol sendtxt  receivetxt  \
+0       40  ...    15        0     No       0          No      10          10   
+1       12  ...    50        0     No      10         Yes      10          10   
+2        2  ...    15        0     No       0          No      25          25   
+3        2  ...    15        0     No       0          No      20          20   
+4        3  ...    20        0     No      10         Yes       5           5   
+..     ...  ...   ...      ...    ...     ...         ...     ...         ...   
+799      2  ...   230        0     No      50         Yes      30          40   
+800      3  ...    15        0     No      30         Yes      20          20   
+801     15  ...    30        0     No       0          No      10          10   
+802      6  ...    30        0     No       0          No      60          50   
+803      8  ...    40       20    Yes      60         Yes      50          30   
+
+     txts  country         status  
+0     Yes    China     NZ.Citizen  
+1     Yes       NZ     NZ.Citizen  
+2     Yes       HK     NZ.Citizen  
+3     Yes       NZ    NZ.Resident  
+4     Yes       NZ     NZ.Citizen  
+..    ...      ...            ...  
+799   Yes       NZ     NZ.Citizen  
+800   Yes       NZ     NZ.Citizen  
+801   Yes   SKorea     NZ.Citizen  
+802   Yes    India     NZ.Citizen  
+803   Yes    China  International  </code></pre>
+<p>Though we included every column in our subset above, we can also
+specify the columns to include in the subset. If we are interested in
+analyzing a (hypothetical!) correlation between eye color and glasses
+among non-smokers, we could exclude any variables that are not of
+interest.</p>
+<p>Note that we are including two conditions below:</p>
+<pre class="python"><code>under_25_eyes_glasses = ugss[(ugss[&quot;age&quot;] &lt; 25) &amp; (ugss[&quot;smokes&quot;] == &quot;No&quot;)][[&quot;sex&quot;, &quot;age&quot;, &quot;eyes&quot;, &quot;glasses&quot;]].copy()
+print(under_25_eyes_glasses)</code></pre>
+<pre><code>        sex  age   eyes glasses
+0      male   22  brown     Yes
+1    female   21  brown     Yes
+2      male   21  brown      No
+3      male   22  brown      No
+4    female   20  brown     Yes
+..      ...  ...    ...     ...
+797    male   24  brown      No
+799  female   21   blue      No
+800    male   19   blue      No
+801    male   24  brown     Yes
+802  female   20  brown      No
+
+[661 rows x 4 columns]</code></pre>
 </div>
 <div id="grouping-and-summarizing-data" class="section level3">
 <h3>Grouping and summarizing data</h3>

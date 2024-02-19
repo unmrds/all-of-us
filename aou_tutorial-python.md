@@ -379,14 +379,283 @@ we also want to subset by row. In pandas, this is accomplished using row
 index positions. Alternatively, we can also use row index labels, though we 
 note that in many cases the row labels will be the same as row index positions.
 
+First let's view information about the row index.
+
+```python
+ugss.index
+```
+```
+RangeIndex(start=0, stop=804, step=1)
+```
+
+The output indicates that the row index starts with 0 and goes up to 804, by
+increments of 1. This means that there are 805 rows in our data. The first 
+row has an index position of 0, the second has an index position of 1, and 
+so on all the way up to 804.
+
+We can select a subset of rows using the index positions of the starting row
+and the ending row separated by a colon. Note that pandas will select all rows
+from the starting position **up to but not including** the ending row. Keeping 
+in mind that the first row  has an index position of 0, we can view the 
+first five  rows with the following:
+
+```python
+ugss[0:5] # Output rows with index positions 0, 1, 2, 3, 4 BUT NOT 5.
+```
+```
+      sex  age   eyes  piercings pierced  tattoos tattooed glasses  sleep  \
+0    male   22  brown          0      No        0       No     Yes      7   
+1  female   21  brown          2     Yes        0       No     Yes      8   
+2    male   21  brown          0      No        0       No      No      7   
+3    male   22  brown          0      No        0       No      No      7   
+4  female   20  brown          4     Yes        0       No     Yes      7   
+
+   study  ...  hair  tobacco smokes alcohol buy.alcohol sendtxt  receivetxt  \
+0     40  ...    15        0     No       0          No      10          10   
+1     12  ...    50        0     No      10         Yes      10          10   
+2      2  ...    15        0     No       0          No      25          25   
+3      2  ...    15        0     No       0          No      20          20   
+4      3  ...    20        0     No      10         Yes       5           5   
+
+   txts  country       status  
+0   Yes    China   NZ.Citizen  
+1   Yes       NZ   NZ.Citizen  
+2   Yes       HK   NZ.Citizen  
+3   Yes       NZ  NZ.Resident  
+4   Yes       NZ   NZ.Citizen  
+
+[5 rows x 29 columns]
+```
+
+When a subset begins with the first row of data, or ends with the last row, we
+can exclude those index positions.
 
 
+```python
+ugss[:5] # Same result as running the ugss.head() function.
+```
+
+```python
+ugss[799:804] # Same result as running the ugss.tail() function.
+```
+
+We can also use negative indexing. The below will also output
+the last five rows of data, and is useful in cases where we may not know how
+many rows of data we have.
+
+```python
+ugss[-5:] # Also the same result as running the ugss.tail() function.
+```
+
+If we want to select a single row based on its row index position, we need to
+explicitly specify the index position label using ```iloc```:
+
+
+```python
+ugss.iloc[0]
+```
+```
+sex                        male
+age                          22
+eyes                      brown
+piercings                     0
+pierced                      No
+tattoos                       0
+tattooed                     No
+glasses                     Yes
+sleep                         7
+study                        40
+tv                            0
+movies                        0
+movies3m                     No
+sport                basketball
+entertainment    comp.vid.games
+fruit                     melon
+income                      198
+rent                        120
+clothes                      20
+hair                         15
+tobacco                       0
+smokes                       No
+alcohol                       0
+buy.alcohol                  No
+sendtxt                      10
+receivetxt                   10
+txts                        Yes
+country                   China
+status               NZ.Citizen
+Name: 0, dtype: object
+```
+
+Another way to select the first five rows of data:
+
+```python
+ugss.iloc[0:5]
+```
+
+### Subsetting by row and column
+
+We can combine the indexing methods above to select by both row and column.
+Let's say we interested in the values of the "sex" and "age" columns, for the
+first five observations.
+
+```python
+ugss[:5][["sex", "age"]]
+```
+```
+      sex  age
+0    male   22
+1  female   21
+2    male   21
+3    male   22
+4  female   20
+```
+
+### Conditional subsetting
+
+Often, we are most interested in subsetting data based on conditions. That is,
+we are interested in the set of observations for which the values of certain
+variables fall within specified parameters.
+
+For example, perhaps we want to limit our analysis to respondents under the
+age of 25:
+
+```python
+ugss["age"] > 25
+```
+```
+0      True
+1      True
+2      True
+3      True
+4      True
+       ... 
+799    True
+800    True
+801    True
+802    True
+803    True
+Name: age, Length: 804, dtype: bool
+```
+
+Note that the output of the above is not the subset we're interested in!
+Instead, the output shows us the result of the evaluation of the condition
+against each row of the dataset. 
+
+In order to actually get the subset of rows where the value of the "age"
+variable is less than 25, we need to use the condition as the row selector
+in place of the slicing syntax demonstrated above.
+
+If we are going to manipulate the subset, it's also good to explicitly
+state that we want a copy of the data.
+
+```python
+under_25 = ugss[ugss["age"] < 25].copy()
+print(under_25)
+```
+```
+        sex  age   eyes  piercings pierced  tattoos tattooed glasses  sleep  \
+0      male   22  brown          0      No        0       No     Yes      7   
+1    female   21  brown          2     Yes        0       No     Yes      8   
+2      male   21  brown          0      No        0       No      No      7   
+3      male   22  brown          0      No        0       No      No      7   
+4    female   20  brown          4     Yes        0       No     Yes      7   
+..      ...  ...    ...        ...     ...      ...      ...     ...    ...   
+799  female   21   blue          2     Yes        0       No      No      8   
+800    male   19   blue          0      No        0       No      No      7   
+801    male   24  brown          0      No        0       No     Yes      9   
+802  female   20  brown          2     Yes        0       No      No      5   
+803    male   22  brown          0      No        0       No     Yes      7   
+
+     study  ...  hair  tobacco smokes alcohol buy.alcohol sendtxt  receivetxt  \
+0       40  ...    15        0     No       0          No      10          10   
+1       12  ...    50        0     No      10         Yes      10          10   
+2        2  ...    15        0     No       0          No      25          25   
+3        2  ...    15        0     No       0          No      20          20   
+4        3  ...    20        0     No      10         Yes       5           5   
+..     ...  ...   ...      ...    ...     ...         ...     ...         ...   
+799      2  ...   230        0     No      50         Yes      30          40   
+800      3  ...    15        0     No      30         Yes      20          20   
+801     15  ...    30        0     No       0          No      10          10   
+802      6  ...    30        0     No       0          No      60          50   
+803      8  ...    40       20    Yes      60         Yes      50          30   
+
+     txts  country         status  
+0     Yes    China     NZ.Citizen  
+1     Yes       NZ     NZ.Citizen  
+2     Yes       HK     NZ.Citizen  
+3     Yes       NZ    NZ.Resident  
+4     Yes       NZ     NZ.Citizen  
+..    ...      ...            ...  
+799   Yes       NZ     NZ.Citizen  
+800   Yes       NZ     NZ.Citizen  
+801   Yes   SKorea     NZ.Citizen  
+802   Yes    India     NZ.Citizen  
+803   Yes    China  International  
+```
+
+Though we included every column in our subset above, we can also specify the
+columns to include in the subset. If we are interested in analyzing a
+(hypothetical!) correlation between eye color and use of eyeglasses among 
+non-smokers,  we could exclude any variables that are not of interest.
+
+Note that we are including two conditions below:
+
+```python
+under_25_eyes_glasses = ugss[(ugss["age"] < 25) & (ugss["smokes"] == "No")][["sex", "age", "eyes", "glasses"]].copy()
+print(under_25_eyes_glasses)
+```
+```
+        sex  age   eyes glasses
+0      male   22  brown     Yes
+1    female   21  brown     Yes
+2      male   21  brown      No
+3      male   22  brown      No
+4    female   20  brown     Yes
+..      ...  ...    ...     ...
+797    male   24  brown      No
+799  female   21   blue      No
+800    male   19   blue      No
+801    male   24  brown     Yes
+802  female   20  brown      No
+
+[661 rows x 4 columns]
+```
+
+We note the above can be difficult to read! Another, more verbose way to 
+arrive at the same result would be:
+
+```python
+under_25 = ugss[ugss["age"] < 25].copy()
+under_25_ns = under_25[under_25["smokes"] == "No"].copy()
+under_25_eyes_glasses = under_25_ns[["sex", "age", "eyes", "glasses"]].copy()
+print(under_25_eyes_glasses)
+```
+```
+        sex  age   eyes glasses
+0      male   22  brown     Yes
+1    female   21  brown     Yes
+2      male   21  brown      No
+3      male   22  brown      No
+4    female   20  brown     Yes
+..      ...  ...    ...     ...
+797    male   24  brown      No
+799  female   21   blue      No
+800    male   19   blue      No
+801    male   24  brown     Yes
+802  female   20  brown      No
+
+[661 rows x 4 columns]
+```
+
+This alternative approach requires more lines of code, but may be easier to
+understand when you come back to your script later.
 
 ### Grouping and summarizing data
 
 The data in the *All of US* public data browser are aggregated at different
 levels - sex, age, etc. In order to arrive at similar statistics with the
-```ugss``` dataset, we need to group the data using the ```group_by()```
+```ugss``` dataset, we need to group the data using the ```groupby()```
 function. Statistics can then be calculated by group.
 
 Let's group our age and hours spent studying subset by age.
