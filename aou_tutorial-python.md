@@ -1,4 +1,4 @@
-# Using R in Jupyter
+# Using Python in Jupyter
 
 This document provides an introduction to programming in python within a Jupyter
 Notebook environment. It is a demonstration of an environment that is 
