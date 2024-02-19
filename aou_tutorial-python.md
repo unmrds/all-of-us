@@ -10,7 +10,7 @@ to researchers who have completed the data use and registration agreement
 (DURA) process with *All of Us.*
 
 This tutorial is designed to be accessible to researchers who are in the
-process of completing, or who have not yet completed, the DURA
+process of completing, or who have not yet started, the DURA
 process. It should be noted that there will be some differences 
 between the tutorial environment and the researcher workbench, in 
 terms of packages and features available to users. 
@@ -73,12 +73,10 @@ only generating descriptive statistics.
 1. Welcome to your Jupyter Notebook! The default name will be something like
 *Untitled.ipynb*. You can change this by clicking on the title in the top
 left of the window.
-1. New notebooks run Python 3 by default. To change this, if you wanted to use R for example, select
-**Runtime -> Change runtime type**. A window will open with some runtime
-options. If you want to use the R language (this workshop focuses on Python), 
-under the **Runtime type** menu, select **R**. 
 
-Keep the default value for the hardware accelerator. Click **Save** to update.
+
+New notebooks run Python 3 by default.  
+
 
 >
 > #### Tip: Getting back to your notebook
@@ -180,6 +178,10 @@ to the *pandas* package. ```pd``` is a commonly used short reference to the *pan
 package and you will commonly see it referenced in documentation demonstrating
 use of the package. 
 
+```python
+import pandas as pd
+```
+
 ## Reading data
 
 We're almost ready to analyze our sample data, which was selected for its
@@ -201,42 +203,51 @@ provide the URL of the remote file to the ```read_csv``` *pandas* function.
 
 ```python
 file_url = "https://raw.githubusercontent.com/unmrds/all-of-us/main/data/uggs.csv"
-uggs = pd.read_csv(file_url)
+ugss = pd.read_csv(file_url)
 ```
-++++++++++++++++++ progress thus far ++++++++++++++++++++++++++++++++++++++++++
 >
 > #### Tip: Checking your environment
 >
->We have demonstrated use of the ```search()``` function to check which
->packages have been loaded into our environment.
->
->In addition to packages, we may also want to view information about the
+>While working in Jupyter, we may want to view information about the
 >ojects - variables and dataframes - that are active in our current
->environment. We can use the ```var.info()``` function to do this.
+>environment. We can use the ```dir()``` and ```display()``` functions
+>to do this.
 >
->```var.info()```
+>```dir() # Lists the objects in our current environment. Note this includes packages.```
+>
+>```display(ugss) # Prints the current value of an object.```
+>
+>```display(file_url)```
+
 
 ## Inspecting data
 
-A moment ago we used the ```View()``` function to open a tabular representation
+A moment ago we used the ```diplay()``` function to open a tabular representation
 of the ```ugss``` data. This provided some information about the structure of
-the data, as did the output of the ```var.info()``` function, above.
+the data.
 
-Other helpful functions for inspecting dataframes are listed below. 
-Note that each of these functions has a required argument, which is the name 
-of the dataframe about which we are asking for information. 
-(For example ```dim(ugss)```, etc.)
+We can also inspect a dataframe's attributes. The syntax for viewing
+attributes is the name of the dataframe, followed by the attribute (with no
+parenthesis). The dataframe and and the requested attribute are separated by
+a dot.
 
-- ```dim()```: The number of rows and columns.
-- ```nrow()```:  The number of rows.
-- ```ncol()```: The number of columns.
-- ```names()```: Column names.
-- ```str()```: Structure infoamtion.
-- ```head()```: The first six rows.
-- ```tail()```: The last six rows.
+- ```ugss.shape```: The number of rows and columns.
+- ```ugss.columns```: Column names.
+- ```ugss.size```: The number of observations.
+- ```ugss.dtypes```: Data types for each column.
 
-Another useful function is ```summary()```, which provides a default set
-of descriptive statistics about factors and numeric columns in a dataframe.
+
+In addition to attributes, there are several functions we can use to inspect
+dataframes. The syntax is similar to the above, with the difference that we
+do need to use parenthesis after the name of the function.
+
+- ```ugss.info()```: Information about the structure of the dataframe.
+- ```ugss.head()```: Prints the first five rows.
+- ```ugss.tail()```: Prints the last five rows.
+
+
+Another useful function is ```describe()```, which provides a default set
+of descriptive statistics about numeric columns in a dataframe.
 
 ```python
 summary(ugss)
