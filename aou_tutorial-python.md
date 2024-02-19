@@ -250,65 +250,39 @@ Another useful function is ```describe()```, which provides a default set
 of descriptive statistics about numeric columns in a dataframe.
 
 ```python
-summary(ugss)
+ugss.desc()
 ```
 ```
-     sex           age           eyes       piercings      pierced  
- female:438   Min.   :17.00   blue : 98   Min.   : 0.000   No :430  
- male  :366   1st Qu.:19.00   brown:523   1st Qu.: 0.000   Yes:374  
-              Median :20.00   green: 39   Median : 0.000            
-              Mean   :21.38   hazel: 48   Mean   : 1.295            
-              3rd Qu.:22.00   other: 96   3rd Qu.: 2.000            
-              Max.   :59.00               Max.   :14.000            
-                                                                    
-    tattoos       tattooed  glasses       sleep            study      
- Min.   :0.0000   No :751   No :354   Min.   : 4.000   Min.   : 0.00  
- 1st Qu.:0.0000   Yes: 53   Yes:450   1st Qu.: 7.000   1st Qu.: 5.00  
- Median :0.0000                       Median : 8.000   Median :10.00  
- Mean   :0.1157                       Mean   : 7.566   Mean   :14.71  
- 3rd Qu.:0.0000                       3rd Qu.: 8.000   3rd Qu.:20.00  
- Max.   :5.0000                       Max.   :12.000   Max.   :80.00  
-                                                                      
-       tv             movies       movies3m         sport    
- Min.   : 0.000   Min.   : 0.000   No :125   other     :132  
- 1st Qu.: 2.000   1st Qu.: 1.000   Yes:679   soccer    :126  
- Median : 5.000   Median : 2.000             basketball:101  
- Mean   : 7.331   Mean   : 3.188             badminton : 99  
- 3rd Qu.:10.000   3rd Qu.: 4.000             none      : 62  
- Max.   :90.000   Max.   :20.000             tennis    : 49  
-                                             (Other)   :235  
-        entertainment        fruit         income             rent        
- meet.friends  :244   strawberry:146   Min.   :    0.0   Min.   :   0.00  
- comp.vid.games:141   other     :121   1st Qu.:  126.0   1st Qu.:   0.00  
- movies        :101   melon     : 99   Median :  200.0   Median :  46.50  
- other         : 63   apple     : 79   Mean   :  329.4   Mean   :  86.09  
- surf.web      : 63   banana    : 76   3rd Qu.:  300.0   3rd Qu.: 150.00  
- parties       : 56   grapes    : 72   Max.   :25000.0   Max.   :1000.00  
- (Other)       :136   (Other)   :211                                      
-    clothes             hair           tobacco        smokes   
- Min.   :   0.00   Min.   :  0.00   Min.   :  0.000   No :742  
- 1st Qu.:  20.00   1st Qu.: 15.00   1st Qu.:  0.000   Yes: 62  
- Median :  50.00   Median : 25.00   Median :  0.000            
- Mean   :  95.74   Mean   : 31.83   Mean   :  2.062            
- 3rd Qu.: 100.00   3rd Qu.: 40.00   3rd Qu.:  0.000            
- Max.   :1000.00   Max.   :350.00   Max.   :150.000            
-                                                               
-    alcohol       buy.alcohol    sendtxt         receivetxt      txts    
- Min.   :  0.00   No :439     Min.   :  0.00   Min.   :  0.00   No : 13  
- 1st Qu.:  0.00   Yes:365     1st Qu.: 10.00   1st Qu.: 10.00   Yes:791  
- Median :  0.00               Median : 20.00   Median : 20.00            
- Mean   : 11.83               Mean   : 28.74   Mean   : 29.36            
- 3rd Qu.: 20.00               3rd Qu.: 40.00   3rd Qu.: 40.00            
- Max.   :200.00               Max.   :127.00   Max.   :127.00            
-                                                                         
-     country              status   
- NZ      :248   International:132  
- China   :182   NZ.Citizen   :484  
- SKorea  : 54   NZ.Resident  :188  
- HK      : 39                      
- Malaysia: 38                      
- S.Korea : 34                      
- (Other) :209
+              age   piercings     tattoos       sleep       study          tv  \
+count  804.000000  804.000000  804.000000  804.000000  804.000000  804.000000   
+mean    21.383085    1.294776    0.115672    7.565920   14.712687    7.330846   
+std      3.896866    1.977186    0.509245    1.178632   12.900647    7.917067   
+min     17.000000    0.000000    0.000000    4.000000    0.000000    0.000000   
+25%     19.000000    0.000000    0.000000    7.000000    5.000000    2.000000   
+50%     20.000000    0.000000    0.000000    8.000000   10.000000    5.000000   
+75%     22.000000    2.000000    0.000000    8.000000   20.000000   10.000000   
+max     59.000000   14.000000    5.000000   12.000000   80.000000   90.000000   
+
+           movies        income         rent      clothes        hair  \
+count  804.000000    804.000000   804.000000   804.000000  804.000000   
+mean     3.187811    329.351990    86.093284    95.737562   31.829602   
+std      3.167519   1259.158928   110.652182   129.735451   37.229617   
+min      0.000000      0.000000     0.000000     0.000000    0.000000   
+25%      1.000000    126.000000     0.000000    20.000000   15.000000   
+50%      2.000000    200.000000    46.500000    50.000000   25.000000   
+75%      4.000000    300.000000   150.000000   100.000000   40.000000   
+max     20.000000  25000.000000  1000.000000  1000.000000  350.000000   
+
+          tobacco     alcohol     sendtxt  receivetxt  
+count  804.000000  804.000000  804.000000  804.000000  
+mean     2.062189   11.832090   28.736318   29.361940  
+std      9.641061   21.355333   28.677754   29.118166  
+min      0.000000    0.000000    0.000000    0.000000  
+25%      0.000000    0.000000   10.000000   10.000000  
+50%      0.000000    0.000000   20.000000   20.000000  
+75%      0.000000   20.000000   40.000000   40.000000  
+max    150.000000  200.000000  127.000000  127.000000  
+
 ```
 
 ## Getting help
