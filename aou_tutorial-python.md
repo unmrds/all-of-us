@@ -233,7 +233,7 @@ a dot.
 
 - ```ugss.shape```: The number of rows and columns.
 - ```ugss.columns```: Column names.
-- ```ugss.size```: The number of data cells.
+- ```ugss.size```: The number of data cells (the product of the number of rows x the number of columns).
 - ```ugss.dtypes```: Data types for each column.
 
 
