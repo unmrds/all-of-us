@@ -389,9 +389,10 @@ RangeIndex(start=0, stop=804, step=1)
 ```
 
 The output indicates that the row index starts with 0 and goes up to 804, by
-increments of 1. This means that there are 805 rows in our data. The first 
+increments of 1. This means that there are 804 rows in our data. The first 
 row has an index position of 0, the second has an index position of 1, and 
-so on all the way up to 804.
+so on all the way up to 803. Note that the "stop" value should be understood
+as *up to but not including*.
 
 We can select a subset of rows using the index positions of the starting row
 and the ending row separated by a colon. Note that pandas will select all rows
