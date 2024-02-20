@@ -296,7 +296,7 @@ help(ugss)   # Help information about dataframes. 'ugss' is an instance of a dat
 ```
 
 ```python
-help(ugss.describe())  # Help information about the describe() function.
+help(ugss.describe)  # Help information about the describe() function. Note: no parentheses
 ```
 
 
