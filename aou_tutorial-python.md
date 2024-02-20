@@ -250,7 +250,7 @@ Another useful function is ```describe()```, which provides a default set
 of descriptive statistics about numeric columns in a dataframe.
 
 ```python
-ugss.desc()
+ugss.describe()
 ```
 ```
               age   piercings     tattoos       sleep       study          tv  \
